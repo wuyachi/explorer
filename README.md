@@ -52,8 +52,6 @@ Example Response
 }
 ```
 
-<a name="目标内容">元素内容</a>
-
 ### GET info
 
 Request 

@@ -2,6 +2,10 @@
 
 提供palette链的信息。
 
+## 测试节点
+
+http://40.115.153.174:22000
+
 ## API
 
 * [GET /](#get-/)
@@ -206,6 +210,7 @@ curl --location --request POST 'http://localhost:8080/v1/blocks' \
 ```
 
 Example Response
+
 ```
 {
     "PageSize": 10,

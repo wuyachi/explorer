@@ -1,6 +1,6 @@
 {
   "NodeConfig": {
-    "RestURL": "http://192.168.1.244:22001",
+    "RestURL": "http://106.75.250.160:22000",
     "Admin": "0xf3A9d42C01635A585f1721463842F8936075105F",
     "WalletFile": "./wallet/wallet.dat",
     "WalletPwd": "4cUYqGj2yib718E7ZmGQc"

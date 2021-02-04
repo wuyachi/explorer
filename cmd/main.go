@@ -21,6 +21,7 @@ import (
 	"explorer/chain"
 	"explorer/conf"
 	"fmt"
+	"github.com/astaxie/beego/logs"
 	"github.com/urfave/cli"
 	"os"
 	"os/signal"
@@ -78,6 +79,7 @@ func setupApp() *cli.App {
 }
 
 func startServer(ctx *cli.Context) {
+	logs.SetLogger(logs.AdapterFile, `{"filename":"logs/palette_explorer.log"}`)
 	configFile := ctx.GlobalString(getFlagName(configPathFlag))
 	config := conf.NewConfig(configFile)
 	if config == nil {

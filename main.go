@@ -3,10 +3,12 @@ package main
 import (
 	_ "explorer/routers"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/plugins/cors"
 )
 
 func main() {
+	logs.SetLogger(logs.AdapterFile, `{"filename":"logs/palette_http.log"}`)
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

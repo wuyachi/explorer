@@ -128,10 +128,19 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		transactionInfo.Hash = transaction.Hash().String()
 		transactionInfo.From = strings.ToLower(transaction.From().String())
 		transactionInfo.Cost = transaction.Cost().Uint64()
-		transactionInfo.Data = hex.EncodeToString(transaction.Data())
+		data := hex.EncodeToString(transaction.Data())
+		dataLen := len(data)
+		if dataLen > 4096 {
+			dataLen = 4096
+		}
+		transactionInfo.Data = data[0:dataLen]
 		transactionInfo.Gas = transaction.Gas()
 		transactionInfo.GasPrice = utils.AbandonPrecision(transaction.GasPrice())
-		transactionInfo.To = strings.ToLower(transaction.To().String())
+		if transaction.To() == nil {
+			transactionInfo.To = ""
+		} else {
+			transactionInfo.To = strings.ToLower(transaction.To().String())
+		}
 		transactionInfo.Value = utils.AbandonPrecision(transaction.Value())
 		transactionInfo.BlockNumber = blockInfo.Number
 		transactionInfo.Time = blockInfo.Time

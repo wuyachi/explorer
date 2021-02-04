@@ -27,6 +27,6 @@ replace (
 	github.com/coreos/go-semver v0.0.1 => github.com/polynetwork/coreos-semver v0.0.1
 	github.com/coreos/go-systemd v0.0.1 => github.com/polynetwork/coreos-systemd v0.0.1
 	github.com/coreos/pkg v0.0.1 => github.com/polynetwork/coreos-pkg v0.0.1
-	github.com/ethereum/go-ethereum v1.9.24 => github.com/palettechain/palette v0.0.0-20201124063647-d08362935d73
-	github.com/palettechain/palette-go-sdk v0.0.0 => github.com/palettechain/palette-go-sdk v0.0.0-20201126014409-384ed62d8986
+	github.com/ethereum/go-ethereum v1.9.24 => github.com/palettechain/palette v0.2.3-0.20210203065657-a01eeab06f5e
+	github.com/palettechain/palette-go-sdk v0.0.0 => github.com/palettechain/palette-go-sdk v0.0.0-20201230091548-3841208524b4
 )

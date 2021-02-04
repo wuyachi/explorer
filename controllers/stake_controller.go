@@ -16,7 +16,6 @@ func (c *StakeController) StakesOfOwner() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &stakesOfOwnerReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	stakes := make([]*models.Stake, 0)
 	db.Where("owner = ?", stakesOfOwnerReq.Owner).Limit(stakesOfOwnerReq.PageSize).Offset(stakesOfOwnerReq.PageSize * stakesOfOwnerReq.PageNo).Find(&stakes)
 	var stakeNum int64
@@ -32,7 +31,6 @@ func (c *StakeController) StakesOfValidator() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &stakesOfValidatorReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	stakes := make([]*models.Stake, 0)
 	db.Where("validator = ?", stakesOfValidatorReq.Validator).Limit(stakesOfValidatorReq.PageSize).Offset(stakesOfValidatorReq.PageSize * stakesOfValidatorReq.PageNo).Find(&stakes)
 	var stakeNum int64
@@ -48,7 +46,6 @@ func (c *StakeController) StakeInfo() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &stakeInfoReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	stake := new(models.Stake)
 	db.Where("owner = ? and validator = ?", stakeInfoReq.Owner, stakeInfoReq.Validator).First(stake)
 	c.Data["json"] = models.MakeStakeInfoResponse(stake)

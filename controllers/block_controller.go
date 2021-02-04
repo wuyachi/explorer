@@ -16,7 +16,6 @@ func (c *BlockController) BlockByNumber() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &blockByNumberReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	blockInfo := new(models.Block)
 	db.Where("number = ?", blockByNumberReq.Number).Preload("Transactions").First(blockInfo)
 	c.Data["json"] = models.MakeBlockResponse(blockInfo)
@@ -29,7 +28,6 @@ func (c *BlockController) BlockByHash() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &blockByHashReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	blockInfo := new(models.Block)
 	db.Where("hash = ?", blockByHashReq.Hash).Preload("Transactions").First(blockInfo)
 	c.Data["json"] = models.MakeBlockResponse(blockInfo)
@@ -42,7 +40,6 @@ func (c *BlockController) Blocks() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &blocksReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	blocks := make([]*models.Block, 0)
 	db.Debug().Limit(blocksReq.PageSize).Offset(blocksReq.PageSize * blocksReq.PageNo).Order("number asc").Preload("Transactions").Find(&blocks)
 	var blockNum int64

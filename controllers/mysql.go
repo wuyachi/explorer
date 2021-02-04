@@ -6,6 +6,10 @@ import (
 	"gorm.io/driver/mysql"
 )
 
+var (
+	db = newDB()
+)
+
 func newDB() *gorm.DB{
 	user := beego.AppConfig.String("mysqluser")
 	password := beego.AppConfig.String("mysqlpass")

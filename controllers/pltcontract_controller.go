@@ -16,7 +16,6 @@ func (c *PLTContractController) PLTHolderInfo() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &pltHolderInfoReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	pltContract := new(models.PLTContract)
 	db.Where("address = ?", pltHolderInfoReq.Address).First(pltContract)
 	c.Data["json"] = models.MakePLTHolderInfoResponse(pltContract)
@@ -29,7 +28,6 @@ func (c *PLTContractController) PLTHolders() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &pltHoldersReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	pltContracts := make([]*models.PLTContract, 0)
 	db.Limit(pltHoldersReq.PageSize).Offset(pltHoldersReq.PageSize * pltHoldersReq.PageNo).Order("amount desc").Find(&pltContracts)
 	var pltContractNum int64

@@ -16,7 +16,6 @@ func (c *TransactionController) TransactionByHash() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionByHashReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	transactionInfo := new(models.Transaction)
 	db.Where("hash = ?", transactionByHashReq.Hash).Preload("Events").Preload("TransactionDetails").First(transactionInfo)
 	c.Data["json"] = models.MakeTransactionResponse(transactionInfo)
@@ -29,7 +28,6 @@ func (c *TransactionController) Transactions() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionsReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	transactions := make([]*models.Transaction, 0)
 	db.Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("time asc").
 		Preload("Events").Preload("TransactionDetails").Find(&transactions)
@@ -46,7 +44,6 @@ func (c *TransactionController) TransactionsOfContract() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionsOfContractReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	transactions := make([]*models.Transaction, 0)
 	db.Where("`to` = ?", transactionsOfContractReq.Contract).Limit(transactionsOfContractReq.PageSize).Offset(transactionsOfContractReq.PageSize * transactionsOfContractReq.PageNo).Order("time asc").
 		Preload("Events").Preload("TransactionDetails").Find(&transactions)
@@ -63,7 +60,6 @@ func (c *TransactionController) TransactionsOfUser() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionsOfUserReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	transactions := make([]*models.Transaction, 0)
 	db.Where("`from` = ?", transactionsOfUserReq.User).Limit(transactionsOfUserReq.PageSize).Offset(transactionsOfUserReq.PageSize * transactionsOfUserReq.PageNo).Order("time asc").
 		Preload("Events").Preload("TransactionDetails").Find(&transactions)

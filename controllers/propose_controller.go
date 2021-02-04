@@ -16,7 +16,6 @@ func (c *ProposeController) Proposes() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &proposesReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	proposes := make([]*models.Propose, 0)
 	db.Limit(proposesReq.PageSize).Offset(proposesReq.PageSize * proposesReq.PageNo).Find(&proposes)
 	var proposeNum int64
@@ -33,7 +32,6 @@ func (c *ProposeController) ProposeInfo() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &proposeInfoReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	propose := new(models.Propose)
 	db.Where("propose_id = ?", proposeInfoReq.ProposeId).First(propose)
 	c.Data["json"] = models.MakeProposeInfoResponse(propose)
@@ -46,7 +44,6 @@ func (c *ProposeController) ProposesOfUser() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &proposesOfUserReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	proposes := make([]*models.Propose, 0)
 	db.Where("proposer = ?", proposesOfUserReq.Proposer).Limit(proposesOfUserReq.PageSize).Offset(proposesOfUserReq.PageSize * proposesOfUserReq.PageNo).Find(&proposes)
 	var validatorNum int64

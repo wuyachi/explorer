@@ -10,7 +10,6 @@ type ChainController struct {
 }
 
 func (c *ChainController) Chain() {
-	db := newDB()
 	chain := new(models.Chain)
 	db.First(chain)
 	c.Data["json"] = models.MakeChainResponse(chain)

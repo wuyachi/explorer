@@ -16,7 +16,6 @@ func (c *ValidatorController) Validators() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &validatorsReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	validators := make([]*models.Validator, 0)
 	db.Limit(validatorsReq.PageSize).Offset(validatorsReq.PageSize * validatorsReq.PageNo).Find(&validators)
 	var validatorNum int64
@@ -33,7 +32,6 @@ func (c *ValidatorController) ValidatorInfo() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &validatorInfoReq); err != nil {
 		panic(err)
 	}
-	db := newDB()
 	validator := new(models.Validator)
 	db.Where("address = ?", validatorInfoReq.Address).First(validator)
 	c.Data["json"] = models.MakeValidatorInfoResponse(validator)

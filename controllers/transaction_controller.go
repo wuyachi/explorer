@@ -29,7 +29,7 @@ func (c *TransactionController) Transactions() {
 		panic(err)
 	}
 	transactions := make([]*models.Transaction, 0)
-	db.Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("time asc").
+	db.Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("time desc").
 		Preload("Events").Preload("TransactionDetails").Find(&transactions)
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Count(&transactionNum)
@@ -45,7 +45,7 @@ func (c *TransactionController) TransactionsOfContract() {
 		panic(err)
 	}
 	transactions := make([]*models.Transaction, 0)
-	db.Where("`to` = ?", transactionsOfContractReq.Contract).Limit(transactionsOfContractReq.PageSize).Offset(transactionsOfContractReq.PageSize * transactionsOfContractReq.PageNo).Order("time asc").
+	db.Where("`to` = ?", transactionsOfContractReq.Contract).Limit(transactionsOfContractReq.PageSize).Offset(transactionsOfContractReq.PageSize * transactionsOfContractReq.PageNo).Order("time desc").
 		Preload("Events").Preload("TransactionDetails").Find(&transactions)
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Where("`to` = ?", transactionsOfContractReq.Contract).Count(&transactionNum)
@@ -61,7 +61,7 @@ func (c *TransactionController) TransactionsOfUser() {
 		panic(err)
 	}
 	transactions := make([]*models.Transaction, 0)
-	db.Where("`from` = ?", transactionsOfUserReq.User).Limit(transactionsOfUserReq.PageSize).Offset(transactionsOfUserReq.PageSize * transactionsOfUserReq.PageNo).Order("time asc").
+	db.Where("`from` = ?", transactionsOfUserReq.User).Limit(transactionsOfUserReq.PageSize).Offset(transactionsOfUserReq.PageSize * transactionsOfUserReq.PageNo).Order("time desc").
 		Preload("Events").Preload("TransactionDetails").Find(&transactions)
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Where("`from` = ?", transactionsOfUserReq.User).Count(&transactionNum)

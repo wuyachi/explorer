@@ -33,5 +33,5 @@ func init() {
 		beego.NSRouter("/proposesofuser/", &controllers.ProposeController{}, "post:ProposesOfUser"),
 	)
 	beego.AddNamespace(ns)
-    beego.Router("/", &controllers.InfoController{}, "*:Get")
+	beego.Router("/", &controllers.InfoController{}, "*:Get")
 }

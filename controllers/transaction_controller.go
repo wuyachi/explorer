@@ -34,7 +34,7 @@ func (c *TransactionController) Transactions() {
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Count(&transactionNum)
 	c.Data["json"] = models.MakeTransactionsResponse(transactionsReq.PageSize, transactionsReq.PageNo,
-		(int(transactionNum) + transactionsReq.PageSize - 1) / transactionsReq.PageSize, int(transactionNum), transactions)
+		(int(transactionNum)+transactionsReq.PageSize-1)/transactionsReq.PageSize, int(transactionNum), transactions)
 	c.ServeJSON()
 }
 
@@ -50,7 +50,7 @@ func (c *TransactionController) TransactionsOfContract() {
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Where("`to` = ?", transactionsOfContractReq.Contract).Count(&transactionNum)
 	c.Data["json"] = models.MakeTransactionsResponse(transactionsOfContractReq.PageSize, transactionsOfContractReq.PageNo,
-		(int(transactionNum) + transactionsOfContractReq.PageSize - 1) / transactionsOfContractReq.PageSize, int(transactionNum), transactions)
+		(int(transactionNum)+transactionsOfContractReq.PageSize-1)/transactionsOfContractReq.PageSize, int(transactionNum), transactions)
 	c.ServeJSON()
 }
 
@@ -66,6 +66,6 @@ func (c *TransactionController) TransactionsOfUser() {
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Where("`from` = ?", transactionsOfUserReq.User).Count(&transactionNum)
 	c.Data["json"] = models.MakeTransactionsResponse(transactionsOfUserReq.PageSize, transactionsOfUserReq.PageNo,
-		(int(transactionNum) + transactionsOfUserReq.PageSize - 1) / transactionsOfUserReq.PageSize, int(transactionNum), transactions)
+		(int(transactionNum)+transactionsOfUserReq.PageSize-1)/transactionsOfUserReq.PageSize, int(transactionNum), transactions)
 	c.ServeJSON()
 }

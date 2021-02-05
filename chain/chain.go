@@ -36,13 +36,13 @@ func NewChain(cfg *conf.Config) *Chain {
 	}
 	chain.sdk = sdk
 	//db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:3306)/palette?charset=utf8"), &gorm.Config{})
-	db, err := gorm.Open(mysql.Open(cfg.DBConfig.User + ":" +
-		cfg.DBConfig.Password + "@tcp(" + cfg.DBConfig.URL + ")/" +
-		cfg.DBConfig.Scheme + "?charset=utf8"), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(cfg.DBConfig.User+":"+
+		cfg.DBConfig.Password+"@tcp("+cfg.DBConfig.URL+")/"+
+		cfg.DBConfig.Scheme+"?charset=utf8"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	err = db.AutoMigrate(&models.Chain{}, &models.Block{}, &models.Transaction{},&models.Event{},
+	err = db.AutoMigrate(&models.Chain{}, &models.Block{}, &models.Transaction{}, &models.Event{},
 		&models.PLTContract{}, &models.NFTContract{}, &models.Validator{}, &models.Propose{},
 		&models.Stake{}, &models.TransactionDetail{})
 	if err != nil {
@@ -84,11 +84,11 @@ func (this *Chain) ListenChain() {
 				logs.Error("ListenChain - cannot get height, err: %s", err)
 				continue
 			}
-			if this.chain.Height >= height.Uint64() - 1 {
+			if this.chain.Height >= height.Uint64()-1 {
 				continue
 			}
 			logs.Info("ListenChain - chain latest height is %d, parser height: %d", height.Uint64(), this.chain.Height)
-			for this.chain.Height < height.Uint64() - 1 {
+			for this.chain.Height < height.Uint64()-1 {
 				err := this.HandleNewBlock(this.chain.Height + 1)
 				if err != nil {
 					logs.Error("HandleNewBlock err: %v", err)
@@ -150,7 +150,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		if err != nil {
 			return err
 		}
-		for _, event :=  range events {
+		for _, event := range events {
 			eventInfo := new(models.Event)
 			eventInfo.Number = event.BlockNumber
 			eventInfo.Contract = strings.ToLower(event.Contract.String())
@@ -232,13 +232,13 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 
 					var tokenInfo *models.NFTContract
-					tokenInfo, ok := nftContractMap[nft + token]
+					tokenInfo, ok := nftContractMap[nft+token]
 					if !ok {
 						tokenInfo = new(models.NFTContract)
 						this.db.Where("nft = ? and token = ?", nft, token).First(tokenInfo)
 						tokenInfo.NFT = nft
 						tokenInfo.Token = token
-						nftContractMap[nft + token] = tokenInfo
+						nftContractMap[nft+token] = tokenInfo
 					}
 					tokenInfo.Owner = to
 					tokenInfo.Uri, _ = this.sdk.NFTTokenUri(event.Contract, tokenId)
@@ -288,13 +288,13 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					amount := utils.AbandonPrecision(new(big.Int).SetBytes(event.Data))
 
 					var stakeInfo *models.Stake
-					stakeInfo, ok := stakeMap[owner + validator]
+					stakeInfo, ok := stakeMap[owner+validator]
 					if !ok {
 						stakeInfo = new(models.Stake)
 						this.db.Where("owner = ? and validator = ?", owner, validator).First(stakeInfo)
 						stakeInfo.Owner = owner
 						stakeInfo.Validator = validator
-						stakeMap[owner + validator] = stakeInfo
+						stakeMap[owner+validator] = stakeInfo
 					}
 
 					if revoke == false {

@@ -17,4 +17,3 @@ func main() {
 		AllowCredentials: true}))
 	beego.Run()
 }
-

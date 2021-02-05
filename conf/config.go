@@ -8,22 +8,22 @@ import (
 )
 
 type Config struct {
-	NodeConfig   *NodeConfig
-	DBConfig *DBConfig
+	NodeConfig *NodeConfig
+	DBConfig   *DBConfig
 }
 
 type NodeConfig struct {
-	RestURL                 string
-	Admin                   string
-	WalletFile              string
-	WalletPwd               string
+	RestURL    string
+	Admin      string
+	WalletFile string
+	WalletPwd  string
 }
 
 type DBConfig struct {
-	URL          string
-	User         string
-	Password     string
-	Scheme       string
+	URL      string
+	User     string
+	Password string
+	Scheme   string
 }
 
 func ReadFile(fileName string) ([]byte, error) {

@@ -21,7 +21,7 @@ func (c *StakeController) StakesOfOwner() {
 	var stakeNum int64
 	db.Model(&models.Stake{}).Where("owner = ?", stakesOfOwnerReq.Owner).Count(&stakeNum)
 	c.Data["json"] = models.MakeStakesOfOwnerResponse(stakesOfOwnerReq.PageSize, stakesOfOwnerReq.PageNo,
-		(int(stakeNum) + stakesOfOwnerReq.PageSize - 1) / stakesOfOwnerReq.PageSize, int(stakeNum), stakes)
+		(int(stakeNum)+stakesOfOwnerReq.PageSize-1)/stakesOfOwnerReq.PageSize, int(stakeNum), stakes)
 	c.ServeJSON()
 }
 
@@ -36,7 +36,7 @@ func (c *StakeController) StakesOfValidator() {
 	var stakeNum int64
 	db.Model(&models.Stake{}).Where("validator = ?", stakesOfValidatorReq.Validator).Count(&stakeNum)
 	c.Data["json"] = models.MakeStakesOfValidatorResponse(stakesOfValidatorReq.PageSize, stakesOfValidatorReq.PageNo,
-		(int(stakeNum) + stakesOfValidatorReq.PageSize - 1) / stakesOfValidatorReq.PageSize, int(stakeNum), stakes)
+		(int(stakeNum)+stakesOfValidatorReq.PageSize-1)/stakesOfValidatorReq.PageSize, int(stakeNum), stakes)
 	c.ServeJSON()
 }
 

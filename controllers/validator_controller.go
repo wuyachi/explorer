@@ -21,10 +21,9 @@ func (c *ValidatorController) Validators() {
 	var validatorNum int64
 	db.Model(&models.Validator{}).Count(&validatorNum)
 	c.Data["json"] = models.MakeValidatorsResponse(validatorsReq.PageSize, validatorsReq.PageNo,
-		(int(validatorNum) + validatorsReq.PageSize - 1) / validatorsReq.PageSize, int(validatorNum), validators)
+		(int(validatorNum)+validatorsReq.PageSize-1)/validatorsReq.PageSize, int(validatorNum), validators)
 	c.ServeJSON()
 }
-
 
 func (c *ValidatorController) ValidatorInfo() {
 	var validatorInfoReq models.ValidatorInfoReq

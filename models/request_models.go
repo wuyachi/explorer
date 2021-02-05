@@ -5,19 +5,19 @@ import (
 )
 
 type ExplorerResp struct {
-	Version   string
-	URL       string
+	Version string
+	URL     string
 }
 
 type ChainResp struct {
-	Id     uint64
-	Name   string
-	Height uint64
-	StakeAmount string
-	LastReward uint64
-	MintPrice string
+	Id           uint64
+	Name         string
+	Height       uint64
+	StakeAmount  string
+	LastReward   uint64
+	MintPrice    string
 	RewardPeriod uint64
-	GasFee string
+	GasFee       string
 }
 
 func MakeChainResponse(chain *Chain) *ChainResp {
@@ -35,16 +35,16 @@ func MakeChainResponse(chain *Chain) *ChainResp {
 }
 
 type BlockResp struct {
-	Hash    string
-	GasLimit  uint64
-	GasUsed  uint64
-	Difficulty uint64
-	Number     uint64
-	ParentHash string
+	Hash         string
+	GasLimit     uint64
+	GasUsed      uint64
+	Difficulty   uint64
+	Number       uint64
+	ParentHash   string
 	ReceiptHash  string
-	TxHash  string
-	TxNumber uint64
-	Time  uint64
+	TxHash       string
+	TxNumber     uint64
+	Time         uint64
 	Transactions []string
 }
 
@@ -58,16 +58,16 @@ type BlockByHashReq struct {
 
 func MakeBlockResponse(block *Block) *BlockResp {
 	blockOut := &BlockResp{
-		Hash:         block.Hash,
-		GasLimit:     block.GasLimit,
-		GasUsed:      block.GasUsed,
-		Difficulty:   block.Difficulty,
-		Number:       block.Number,
-		ParentHash:   block.ParentHash,
-		ReceiptHash:  block.ReceiptHash,
-		TxHash:       block.TxHash,
-		TxNumber:     block.TxNumber,
-		Time:         block.Time,
+		Hash:        block.Hash,
+		GasLimit:    block.GasLimit,
+		GasUsed:     block.GasUsed,
+		Difficulty:  block.Difficulty,
+		Number:      block.Number,
+		ParentHash:  block.ParentHash,
+		ReceiptHash: block.ReceiptHash,
+		TxHash:      block.TxHash,
+		TxNumber:    block.TxNumber,
+		Time:        block.Time,
 	}
 	for _, transaction := range block.Transactions {
 		blockOut.Transactions = append(blockOut.Transactions, transaction.Hash)
@@ -77,22 +77,22 @@ func MakeBlockResponse(block *Block) *BlockResp {
 
 type BlocksReq struct {
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type BlocksResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
+	PageSize   int
+	PageNo     int
+	TotalPage  int
 	TotalCount int
-	Blocks []*BlockResp
+	Blocks     []*BlockResp
 }
 
 func MakeBlocksResponse(pageSize int, pageNo int, totalPage int, totalCount int, blocks []*Block) *BlocksResp {
 	blocksResp := &BlocksResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, block := range blocks {
@@ -102,18 +102,18 @@ func MakeBlocksResponse(pageSize int, pageNo int, totalPage int, totalCount int,
 }
 
 type TransactionResp struct {
-	Hash  string
-	From  string
-	Cost  uint64
-	Data  string
-	Gas   uint64
-	GasPrice string
-	To    string
-	Value string
-	Time  uint64
-	BlockNumber  uint64
-	BlockHash  string
-	Events []*EventResp
+	Hash               string
+	From               string
+	Cost               uint64
+	Data               string
+	Gas                uint64
+	GasPrice           string
+	To                 string
+	Value              string
+	Time               uint64
+	BlockNumber        uint64
+	BlockHash          string
+	Events             []*EventResp
 	TransactionDetails []*TransactionDetailResp
 }
 
@@ -123,17 +123,17 @@ type TransactionByHashReq struct {
 
 func MakeTransactionResponse(transaction *Transaction) *TransactionResp {
 	transactionResp := &TransactionResp{
-		Hash:               transaction.Hash,
-		From:               transaction.From,
-		Cost:               transaction.Cost,
-		Data:               transaction.Data,
-		Gas:                transaction.Gas,
-		GasPrice:           utils.AmountWithoutPrecision(transaction.GasPrice),
-		To:                 transaction.To,
-		Value:             utils.AmountWithoutPrecision( transaction.Value),
-		BlockNumber:        transaction.BlockNumber,
-		Time:               transaction.Time,
-		BlockHash:          transaction.BlockHash,
+		Hash:        transaction.Hash,
+		From:        transaction.From,
+		Cost:        transaction.Cost,
+		Data:        transaction.Data,
+		Gas:         transaction.Gas,
+		GasPrice:    utils.AmountWithoutPrecision(transaction.GasPrice),
+		To:          transaction.To,
+		Value:       utils.AmountWithoutPrecision(transaction.Value),
+		BlockNumber: transaction.BlockNumber,
+		Time:        transaction.Time,
+		BlockHash:   transaction.BlockHash,
 	}
 	for _, event := range transaction.Events {
 		transactionResp.Events = append(transactionResp.Events, MakeEventResponse(event))
@@ -144,17 +144,16 @@ func MakeTransactionResponse(transaction *Transaction) *TransactionResp {
 	return transactionResp
 }
 
-
 type EventResp struct {
-	Number   uint64
-	Contract string
-	EventId  string
-	Topic1 string
-	Topic2 string
-	Topic3 string
-	Topic4 string
-	Data string
-	TransactionHash  string
+	Number          uint64
+	Contract        string
+	EventId         string
+	Topic1          string
+	Topic2          string
+	Topic3          string
+	Topic4          string
+	Data            string
+	TransactionHash string
 }
 
 func MakeEventResponse(event *Event) *EventResp {
@@ -173,11 +172,11 @@ func MakeEventResponse(event *Event) *EventResp {
 }
 
 type TransactionDetailResp struct {
-	Contract string
-	From  string
-	To string
-	Value string
-	TransactionHash  string
+	Contract        string
+	From            string
+	To              string
+	Value           string
+	TransactionHash string
 }
 
 func MakeTransactionDetailResponse(transactionDetail *TransactionDetail) *TransactionDetailResp {
@@ -193,34 +192,34 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetail) *Transa
 
 type TransactionsReq struct {
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type TransactionsOfContractReq struct {
 	Contract string
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type TransactionsOfUserReq struct {
-	User string
+	User     string
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type TransactionsResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
-	TotalCount int
+	PageSize     int
+	PageNo       int
+	TotalPage    int
+	TotalCount   int
 	Transactions []*TransactionResp
 }
 
 func MakeTransactionsResponse(pageSize int, pageNo int, totalPage int, totalCount int, transactions []*Transaction) *TransactionsResp {
 	transactionsResp := &TransactionsResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, transaction := range transactions {
@@ -235,35 +234,35 @@ type PLTHolderInfoReq struct {
 
 type PLTHolderInfoResp struct {
 	Address string
-	Amount string
+	Amount  string
 }
 
 func MakePLTHolderInfoResponse(pltContract *PLTContract) *PLTHolderInfoResp {
-	pltHolderInfoResp := &PLTHolderInfoResp {
+	pltHolderInfoResp := &PLTHolderInfoResp{
 		Address: pltContract.Address,
-		Amount: utils.AmountWithoutPrecision(pltContract.Amount),
+		Amount:  utils.AmountWithoutPrecision(pltContract.Amount),
 	}
 	return pltHolderInfoResp
 }
 
 type PLTHoldersReq struct {
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type PLTHoldersResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
-	TotalCount int
+	PageSize       int
+	PageNo         int
+	TotalPage      int
+	TotalCount     int
 	PLTHolderInfos []*PLTHolderInfoResp
 }
 
 func MakePLTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, pltContracts []*PLTContract) *PLTHoldersResp {
 	pltHoldersResp := &PLTHoldersResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, pltContract := range pltContracts {
@@ -277,29 +276,28 @@ type NFTResp struct {
 }
 
 func MakeNFTResponse(nftContract *NFTContract) *NFTResp {
-	nftResp := &NFTResp{NFT:nftContract.NFT}
+	nftResp := &NFTResp{NFT: nftContract.NFT}
 	return nftResp
 }
 
-
 type NFTsReq struct {
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type NFTsResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
+	PageSize   int
+	PageNo     int
+	TotalPage  int
 	TotalCount int
-	NFTs []*NFTResp
+	NFTs       []*NFTResp
 }
 
 func MakeNFTsResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTsResp {
 	nftsResp := &NFTsResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, nftContract := range nftContracts {
@@ -308,39 +306,38 @@ func MakeNFTsResponse(pageSize int, pageNo int, totalPage int, totalCount int, n
 	return nftsResp
 }
 
-
 type NFTTokenResp struct {
-	NFT string
+	NFT   string
 	Token string
 }
 
 func MakeNFTTokenResponse(nftContract *NFTContract) *NFTTokenResp {
 	nftResp := &NFTTokenResp{
-		NFT: nftContract.NFT,
+		NFT:   nftContract.NFT,
 		Token: nftContract.Token,
 	}
 	return nftResp
 }
 
 type NFTTokensReq struct {
-	NFT string
+	NFT      string
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type NFTTokensResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
+	PageSize   int
+	PageNo     int
+	TotalPage  int
 	TotalCount int
-	NFTTokens []*NFTTokenResp
+	NFTTokens  []*NFTTokenResp
 }
 
 func MakeNFTTokensResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTTokensResp {
 	nftTokensResp := &NFTTokensResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, nftContract := range nftContracts {
@@ -349,50 +346,48 @@ func MakeNFTTokensResponse(pageSize int, pageNo int, totalPage int, totalCount i
 	return nftTokensResp
 }
 
-
 type NFTTokenInfoReq struct {
-	NFT string
+	NFT   string
 	Token string
 }
 
 type NFTTokenInfoResp struct {
-	NFT string
+	NFT   string
 	Token string
 	Owner string
-	URI string
+	URI   string
 }
-
 
 func MakeNFTTokenInfoResponse(nftContract *NFTContract) *NFTTokenInfoResp {
 	nftTokenInfoResp := &NFTTokenInfoResp{
-		NFT: nftContract.NFT,
+		NFT:   nftContract.NFT,
 		Token: nftContract.Token,
 		Owner: nftContract.Owner,
-		URI: nftContract.Uri,
+		URI:   nftContract.Uri,
 	}
 	return nftTokenInfoResp
 }
 
 type NFTHoldersOfUserReq struct {
-	NFT string
-	Address string
+	NFT      string
+	Address  string
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type NFTHoldersOfUserResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
-	TotalCount int
+	PageSize      int
+	PageNo        int
+	TotalPage     int
+	TotalCount    int
 	NFTTokenInfos []*NFTTokenInfoResp
 }
 
 func MakeNFTHoldersOfUserResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTHoldersOfUserResp {
 	nftHolderByAddressResp := &NFTHoldersOfUserResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, nftContract := range nftContracts {
@@ -401,26 +396,25 @@ func MakeNFTHoldersOfUserResponse(pageSize int, pageNo int, totalPage int, total
 	return nftHolderByAddressResp
 }
 
-
 type NFTHoldersReq struct {
-	NFT string
+	NFT      string
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type NFTHoldersResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
-	TotalCount int
+	PageSize      int
+	PageNo        int
+	TotalPage     int
+	TotalCount    int
 	NFTTokenInfos []*NFTTokenInfoResp
 }
 
 func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTHoldersResp {
 	nftHoldersResp := &NFTHoldersResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, nftContract := range nftContracts {
@@ -430,14 +424,14 @@ func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount 
 }
 
 type StakeInfoReq struct {
-	Owner string
+	Owner     string
 	Validator string
 }
 
 type StakeInfoResp struct {
-	Owner string
+	Owner     string
 	Validator string
-	Amount string
+	Amount    string
 }
 
 func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
@@ -449,26 +443,25 @@ func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
 	return stakeInfoResp
 }
 
-
 type StakesOfOwnerReq struct {
-	Owner string
+	Owner    string
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type StakesOfOwnerResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
+	PageSize   int
+	PageNo     int
+	TotalPage  int
 	TotalCount int
 	StakeInfos []*StakeInfoResp
 }
 
 func MakeStakesOfOwnerResponse(pageSize int, pageNo int, totalPage int, totalCount int, stakes []*Stake) *StakesOfOwnerResp {
 	stakeByOwnerResp := &StakesOfOwnerResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, stake := range stakes {
@@ -479,23 +472,23 @@ func MakeStakesOfOwnerResponse(pageSize int, pageNo int, totalPage int, totalCou
 
 type StakesOfValidatorReq struct {
 	Validator string
-	PageSize int
-	PageNo int
+	PageSize  int
+	PageNo    int
 }
 
 type StakesOfValidatorResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
+	PageSize   int
+	PageNo     int
+	TotalPage  int
 	TotalCount int
 	StakeInfos []*StakeInfoResp
 }
 
 func MakeStakesOfValidatorResponse(pageSize int, pageNo int, totalPage int, totalCount int, stakes []*Stake) *StakesOfValidatorResp {
 	stakesOfValidatorResp := &StakesOfValidatorResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, stake := range stakes {
@@ -509,14 +502,14 @@ type ValidatorInfoReq struct {
 }
 
 type ValidatorInfoResp struct {
-	Address string
+	Address        string
 	DelegateFactor uint64
-	StakeAmount string
+	StakeAmount    string
 }
 
 func MakeValidatorInfoResponse(validator *Validator) *ValidatorInfoResp {
 	validatorInfoResp := &ValidatorInfoResp{
-		Address:     validator.Address,
+		Address:        validator.Address,
 		DelegateFactor: validator.DelegateFactor,
 		StakeAmount:    utils.AmountWithoutPrecision(validator.StakeAmount),
 	}
@@ -525,22 +518,22 @@ func MakeValidatorInfoResponse(validator *Validator) *ValidatorInfoResp {
 
 type ValidatorsReq struct {
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type ValidatorsResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
-	TotalCount int
+	PageSize       int
+	PageNo         int
+	TotalPage      int
+	TotalCount     int
 	ValidatorInfos []*ValidatorInfoResp
 }
 
 func MakeValidatorsResponse(pageSize int, pageNo int, totalPage int, totalCount int, validators []*Validator) *ValidatorsResp {
 	validatorsResp := &ValidatorsResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, validator := range validators {
@@ -549,50 +542,49 @@ func MakeValidatorsResponse(pageSize int, pageNo int, totalPage int, totalCount 
 	return validatorsResp
 }
 
-
 type ProposeInfoReq struct {
 	ProposeId string
 }
 
 type ProposeInfoResp struct {
-	ProposeId    string
-	Proposer     string
-	Value        string
-	EndBlock     uint64
-	Type         uint8
-	State        uint8
+	ProposeId string
+	Proposer  string
+	Value     string
+	EndBlock  uint64
+	Type      uint8
+	State     uint8
 }
 
 func MakeProposeInfoResponse(propose *Propose) *ProposeInfoResp {
 	proposeInfoResp := &ProposeInfoResp{
-		ProposeId:     propose.ProposeId,
-		Proposer: propose.Proposer,
-		Value:    propose.Value,
-		EndBlock: propose.EndBlock,
-		Type: propose.Type,
-		State: propose.State,
+		ProposeId: propose.ProposeId,
+		Proposer:  propose.Proposer,
+		Value:     propose.Value,
+		EndBlock:  propose.EndBlock,
+		Type:      propose.Type,
+		State:     propose.State,
 	}
 	return proposeInfoResp
 }
 
 type ProposesReq struct {
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type ProposesResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
-	TotalCount int
+	PageSize     int
+	PageNo       int
+	TotalPage    int
+	TotalCount   int
 	ProposeInfos []*ProposeInfoResp
 }
 
 func MakeProposesResponse(pageSize int, pageNo int, totalPage int, totalCount int, proposes []*Propose) *ProposesResp {
 	proposesResp := &ProposesResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, propose := range proposes {
@@ -604,22 +596,22 @@ func MakeProposesResponse(pageSize int, pageNo int, totalPage int, totalCount in
 type ProposesOfUserReq struct {
 	Proposer string
 	PageSize int
-	PageNo int
+	PageNo   int
 }
 
 type ProposesOfUserResp struct {
-	PageSize  int
-	PageNo int
-	TotalPage int
-	TotalCount int
+	PageSize     int
+	PageNo       int
+	TotalPage    int
+	TotalCount   int
 	ProposeInfos []*ProposeInfoResp
 }
 
 func MakeProposesOfUserResponse(pageSize int, pageNo int, totalPage int, totalCount int, proposes []*Propose) *ProposesOfUserResp {
 	proposesOfUserResp := &ProposesOfUserResp{
-		PageSize: pageSize,
-		PageNo: pageNo,
-		TotalPage: totalPage,
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, propose := range proposes {
@@ -627,8 +619,3 @@ func MakeProposesOfUserResponse(pageSize int, pageNo int, totalPage int, totalCo
 	}
 	return proposesOfUserResp
 }
-
-
-
-
-

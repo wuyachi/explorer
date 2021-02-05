@@ -33,6 +33,6 @@ func (c *PLTContractController) PLTHolders() {
 	var pltContractNum int64
 	db.Model(&models.PLTContract{}).Count(&pltContractNum)
 	c.Data["json"] = models.MakePLTHoldersResponse(pltHoldersReq.PageSize, pltHoldersReq.PageNo,
-		(int(pltContractNum) + pltHoldersReq.PageSize - 1) / pltHoldersReq.PageSize, int(pltContractNum), pltContracts)
+		(int(pltContractNum)+pltHoldersReq.PageSize-1)/pltHoldersReq.PageSize, int(pltContractNum), pltContracts)
 	c.ServeJSON()
 }

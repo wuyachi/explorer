@@ -21,10 +21,9 @@ func (c *ProposeController) Proposes() {
 	var proposeNum int64
 	db.Model(&models.Propose{}).Count(&proposeNum)
 	c.Data["json"] = models.MakeProposesResponse(proposesReq.PageSize, proposesReq.PageNo,
-		(int(proposeNum) + proposesReq.PageSize - 1) / proposesReq.PageSize, int(proposeNum), proposes)
+		(int(proposeNum)+proposesReq.PageSize-1)/proposesReq.PageSize, int(proposeNum), proposes)
 	c.ServeJSON()
 }
-
 
 func (c *ProposeController) ProposeInfo() {
 	var proposeInfoReq models.ProposeInfoReq
@@ -49,6 +48,6 @@ func (c *ProposeController) ProposesOfUser() {
 	var validatorNum int64
 	db.Model(&models.Propose{}).Where("proposer = ?", proposesOfUserReq.Proposer).Count(&validatorNum)
 	c.Data["json"] = models.MakeProposesOfUserResponse(proposesOfUserReq.PageSize, proposesOfUserReq.PageNo,
-		(int(validatorNum) + proposesOfUserReq.PageSize - 1) / proposesOfUserReq.PageSize, int(validatorNum), proposes)
+		(int(validatorNum)+proposesOfUserReq.PageSize-1)/proposesOfUserReq.PageSize, int(validatorNum), proposes)
 	c.ServeJSON()
 }

@@ -167,7 +167,12 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 			if len(event.Topic) > 3 {
 				eventInfo.Topic4 = event.Topic[3].String()
 			}
-			eventInfo.Data = hex.EncodeToString(event.Data)
+			data := hex.EncodeToString(event.Data)
+			dataLen := len(data)
+			if dataLen > 4096 {
+				dataLen = 4096
+			}
+			eventInfo.Data = data[0:dataLen]
 			transactionInfo.Events = append(transactionInfo.Events, eventInfo)
 			//
 			if event.Contract == common.HexToAddress(native.PLTContractAddress) {
@@ -216,26 +221,27 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					from := strings.ToLower(common.BytesToAddress(event.Topic[0].Bytes()).String())
 					nft := strings.ToLower(event.Contract.String())
 					to := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
-					token := new(big.Int).SetBytes(event.Data)
+					tokenId := new(big.Int).SetBytes(event.Data)
+					token := common.BigToHash(tokenId).String()
 
 					txDetailInfo := new(models.TransactionDetail)
 					txDetailInfo.Contract = strings.ToLower(event.Contract.String())
 					txDetailInfo.From = from
 					txDetailInfo.To = to
-					txDetailInfo.Value = token.String()
+					txDetailInfo.Value = token
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 
 					var tokenInfo *models.NFTContract
-					tokenInfo, ok := nftContractMap[nft + token.String()]
+					tokenInfo, ok := nftContractMap[nft + token]
 					if !ok {
 						tokenInfo = new(models.NFTContract)
-						this.db.Where("nft = ? and token = ?", nft, token.String()).First(tokenInfo)
+						this.db.Where("nft = ? and token = ?", nft, token).First(tokenInfo)
 						tokenInfo.NFT = nft
-						tokenInfo.Token = token.String()
-						nftContractMap[nft + token.String()] = tokenInfo
+						tokenInfo.Token = token
+						nftContractMap[nft + token] = tokenInfo
 					}
 					tokenInfo.Owner = to
-					tokenInfo.Uri, _ = this.sdk.NFTTokenUri(event.Contract, token)
+					tokenInfo.Uri, _ = this.sdk.NFTTokenUri(event.Contract, tokenId)
 				}
 				continue
 			}

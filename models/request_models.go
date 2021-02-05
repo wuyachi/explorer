@@ -1,5 +1,9 @@
 package models
 
+import (
+	"explorer/utils"
+)
+
 type ExplorerResp struct {
 	Version   string
 	URL       string
@@ -9,11 +13,11 @@ type ChainResp struct {
 	Id     uint64
 	Name   string
 	Height uint64
-	StakeAmount uint64
+	StakeAmount string
 	LastReward uint64
-	MintPrice uint64
+	MintPrice string
 	RewardPeriod uint64
-	GasFee uint64
+	GasFee string
 }
 
 func MakeChainResponse(chain *Chain) *ChainResp {
@@ -21,11 +25,11 @@ func MakeChainResponse(chain *Chain) *ChainResp {
 		Id:           chain.Id,
 		Name:         chain.Name,
 		Height:       chain.Height,
-		StakeAmount:  chain.StakeAmount,
+		StakeAmount:  utils.AmountWithoutPrecision(chain.StakeAmount),
 		LastReward:   chain.LastReward,
-		MintPrice:    chain.MintPrice,
+		MintPrice:    utils.AmountWithoutPrecision(chain.MintPrice),
 		RewardPeriod: chain.RewardPeriod,
-		GasFee:       chain.GasFee,
+		GasFee:       utils.AmountWithoutPrecision(chain.GasFee),
 	}
 	return chainResp
 }
@@ -103,9 +107,9 @@ type TransactionResp struct {
 	Cost  uint64
 	Data  string
 	Gas   uint64
-	GasPrice uint64
+	GasPrice string
 	To    string
-	Value uint64
+	Value string
 	Time  uint64
 	BlockNumber  uint64
 	BlockHash  string
@@ -124,9 +128,9 @@ func MakeTransactionResponse(transaction *Transaction) *TransactionResp {
 		Cost:               transaction.Cost,
 		Data:               transaction.Data,
 		Gas:                transaction.Gas,
-		GasPrice:           transaction.GasPrice,
+		GasPrice:           utils.AmountWithoutPrecision(transaction.GasPrice),
 		To:                 transaction.To,
-		Value:              transaction.Value,
+		Value:             utils.AmountWithoutPrecision( transaction.Value),
 		BlockNumber:        transaction.BlockNumber,
 		Time:               transaction.Time,
 		BlockHash:          transaction.BlockHash,
@@ -231,13 +235,13 @@ type PLTHolderInfoReq struct {
 
 type PLTHolderInfoResp struct {
 	Address string
-	Amount uint64
+	Amount string
 }
 
 func MakePLTHolderInfoResponse(pltContract *PLTContract) *PLTHolderInfoResp {
 	pltHolderInfoResp := &PLTHolderInfoResp {
 		Address: pltContract.Address,
-		Amount: pltContract.Amount,
+		Amount: utils.AmountWithoutPrecision(pltContract.Amount),
 	}
 	return pltHolderInfoResp
 }
@@ -433,14 +437,14 @@ type StakeInfoReq struct {
 type StakeInfoResp struct {
 	Owner string
 	Validator string
-	Amount uint64
+	Amount string
 }
 
 func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
 	stakeInfoResp := &StakeInfoResp{
 		Owner:     stake.Owner,
 		Validator: stake.Validator,
-		Amount:    stake.StakeAmount,
+		Amount:    utils.AmountWithoutPrecision(stake.StakeAmount),
 	}
 	return stakeInfoResp
 }
@@ -507,14 +511,14 @@ type ValidatorInfoReq struct {
 type ValidatorInfoResp struct {
 	Address string
 	DelegateFactor uint64
-	StakeAmount uint64
+	StakeAmount string
 }
 
 func MakeValidatorInfoResponse(validator *Validator) *ValidatorInfoResp {
 	validatorInfoResp := &ValidatorInfoResp{
 		Address:     validator.Address,
 		DelegateFactor: validator.DelegateFactor,
-		StakeAmount:    validator.StakeAmount,
+		StakeAmount:    utils.AmountWithoutPrecision(validator.StakeAmount),
 	}
 	return validatorInfoResp
 }

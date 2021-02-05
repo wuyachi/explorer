@@ -20,8 +20,8 @@ fi
 
 cd ./cmd
 go build -o palette_server main.go
-mv palette_server ./../$base/bridge_server
-cp ./../conf/config.json ./../$base/bridge_server
+mv palette_server ./../$base/palette_server
+cp ./../conf/config.json ./../$base/palette_server
 
 cd ./..
 go build -o palette_http main.go

@@ -2,6 +2,9 @@ package models
 
 import (
 	"explorer/utils"
+	"fmt"
+	"github.com/ethereum/go-ethereum/contracts/native/utils/decimal"
+	"math/big"
 )
 
 type ExplorerResp struct {
@@ -37,6 +40,8 @@ func MakeChainResponse(chain *Chain) *ChainResp {
 type BlockResp struct {
 	Hash         string
 	GasLimit     uint64
+	Size uint64
+	Validators uint64
 	GasUsed      uint64
 	Difficulty   uint64
 	Number       uint64
@@ -59,6 +64,8 @@ type BlockByHashReq struct {
 func MakeBlockResponse(block *Block) *BlockResp {
 	blockOut := &BlockResp{
 		Hash:        block.Hash,
+		Size: block.Size,
+		Validators: block.Validators,
 		GasLimit:    block.GasLimit,
 		GasUsed:     block.GasUsed,
 		Difficulty:  block.Difficulty,
@@ -101,6 +108,8 @@ func MakeBlocksResponse(pageSize int, pageNo int, totalPage int, totalCount int,
 	return blocksResp
 }
 
+
+
 type TransactionResp struct {
 	Hash               string
 	From               string
@@ -112,9 +121,11 @@ type TransactionResp struct {
 	Value              string
 	Time               uint64
 	BlockNumber        uint64
+	Type uint64
+	Status uint64
 	BlockHash          string
-	Events             []*EventResp
-	TransactionDetails []*TransactionDetailResp
+	Events             []*EventResp  `json:",omitempty"`
+	TransactionDetails []*TransactionDetailResp  `json:",omitempty"`
 }
 
 type TransactionByHashReq struct {
@@ -134,60 +145,16 @@ func MakeTransactionResponse(transaction *Transaction) *TransactionResp {
 		BlockNumber: transaction.BlockNumber,
 		Time:        transaction.Time,
 		BlockHash:   transaction.BlockHash,
+		Type: transaction.Type,
+		Status: transaction.Status,
 	}
 	for _, event := range transaction.Events {
 		transactionResp.Events = append(transactionResp.Events, MakeEventResponse(event))
 	}
 	for _, transactionDetail := range transaction.TransactionDetails {
-		transactionResp.TransactionDetails = append(transactionResp.TransactionDetails, MakeTransactionDetailResponse(transactionDetail))
+		transactionResp.TransactionDetails = append(transactionResp.TransactionDetails, MakeTransactionDetailResponse1(transactionDetail))
 	}
 	return transactionResp
-}
-
-type EventResp struct {
-	Number          uint64
-	Contract        string
-	EventId         string
-	Topic1          string
-	Topic2          string
-	Topic3          string
-	Topic4          string
-	Data            string
-	TransactionHash string
-}
-
-func MakeEventResponse(event *Event) *EventResp {
-	eventResp := &EventResp{
-		Number:          event.Number,
-		Contract:        event.Contract,
-		EventId:         event.EventId,
-		Topic1:          event.Topic1,
-		Topic2:          event.Topic2,
-		Topic3:          event.Topic3,
-		Topic4:          event.Topic4,
-		Data:            event.Data,
-		TransactionHash: event.TransactionHash,
-	}
-	return eventResp
-}
-
-type TransactionDetailResp struct {
-	Contract        string
-	From            string
-	To              string
-	Value           string
-	TransactionHash string
-}
-
-func MakeTransactionDetailResponse(transactionDetail *TransactionDetail) *TransactionDetailResp {
-	transactionDetailResp := &TransactionDetailResp{
-		Contract:        transactionDetail.Contract,
-		From:            transactionDetail.From,
-		To:              transactionDetail.To,
-		Value:           transactionDetail.Value,
-		TransactionHash: transactionDetail.TransactionHash,
-	}
-	return transactionDetailResp
 }
 
 type TransactionsReq struct {
@@ -228,6 +195,122 @@ func MakeTransactionsResponse(pageSize int, pageNo int, totalPage int, totalCoun
 	return transactionsResp
 }
 
+type EventResp struct {
+	Number          uint64
+	Contract        string
+	EventId         string
+	Topic1          string
+	Topic2          string
+	Topic3          string
+	Topic4          string
+	Data            string
+	Time uint64
+	TransactionHash string
+}
+
+func MakeEventResponse(event *Event) *EventResp {
+	eventResp := &EventResp{
+		Number:          event.Number,
+		Contract:        event.Contract,
+		EventId:         event.EventId,
+		Topic1:          event.Topic1,
+		Topic2:          event.Topic2,
+		Topic3:          event.Topic3,
+		Topic4:          event.Topic4,
+		Data:            event.Data,
+		Time: event.Time,
+		TransactionHash: event.TransactionHash,
+	}
+	return eventResp
+}
+
+type TransactionDetailResp struct {
+	Contract        string
+	From            string
+	To              string
+	Value           string
+	Time            uint64
+	Status          uint64
+	TransactionHash string
+	ContractInfo    *ContractInfoResp  `json:",omitempty"`
+	NFTHolder       *NFTHolderResp  `json:",omitempty"`
+}
+
+func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo) *TransactionDetailResp {
+	transactionDetailResp := &TransactionDetailResp{
+		Contract:        transactionDetail.Contract,
+		From:            transactionDetail.From,
+		To:              transactionDetail.To,
+		Value:           transactionDetail.Value,
+		Time: transactionDetail.Time,
+		Status: TRANSACTION_STATUS_SUCCESS,
+		TransactionHash: transactionDetail.TransactionHash,
+	}
+	if transactionDetail.ContractInfo != nil {
+		transactionDetailResp.ContractInfo = MakeContractInfoResponse(transactionDetail.ContractInfo)
+	}
+	if transactionDetail.NFTHolder != nil {
+		transactionDetailResp.NFTHolder = MakeNFTHolderResponse(transactionDetail.NFTHolder)
+	}
+	return transactionDetailResp
+}
+
+func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *TransactionDetailResp {
+	transactionDetailResp := &TransactionDetailResp{
+		Contract:        transactionDetail.Contract,
+		From:            transactionDetail.From,
+		To:              transactionDetail.To,
+		Value:           transactionDetail.Value,
+		Time: transactionDetail.Time,
+		Status: TRANSACTION_STATUS_SUCCESS,
+		TransactionHash: transactionDetail.TransactionHash,
+	}
+	return transactionDetailResp
+}
+
+
+type TransactionDetailsOfContractReq struct {
+	Contract string
+	PageSize int
+	PageNo   int
+}
+
+type TransactionDetailsOfNFTTokenReq struct {
+	Contract string
+	Token string
+	PageSize int
+	PageNo   int
+}
+
+type TransactionDetailsOfTransactionReq struct {
+	Hash string
+	Token string
+	PageSize int
+	PageNo   int
+}
+
+type TransactionDetailsResp struct {
+	PageSize       int
+	PageNo         int
+	TotalPage      int
+	TotalCount     int
+	TransactionDetails []*TransactionDetailResp
+}
+
+func MakeTransactionDetailsResponse(pageSize int, pageNo int, totalPage int, totalCount int, transactionDetails []*TransactionDetailWithInfo) *TransactionDetailsResp {
+	transactionDetailsResp := &TransactionDetailsResp{
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
+		TotalCount: totalCount,
+	}
+	for _, transactionDetail := range transactionDetails {
+		transactionDetailsResp.TransactionDetails = append(transactionDetailsResp.TransactionDetails, MakeTransactionDetailResponse(transactionDetail))
+	}
+	return transactionDetailsResp
+}
+
+
 type PLTHolderInfoReq struct {
 	Address string
 }
@@ -235,12 +318,22 @@ type PLTHolderInfoReq struct {
 type PLTHolderInfoResp struct {
 	Address string
 	Amount  string
+	Percent string `json:",omitempty"`
 }
 
-func MakePLTHolderInfoResponse(pltContract *PLTContract) *PLTHolderInfoResp {
+func MakePLTHolderInfoResponse(pltContract *PLTHolderWithPercent) *PLTHolderInfoResp {
+	aaa := new(big.Float).Mul(new(big.Float).SetFloat64(pltContract.Percent), new(big.Float).SetInt64(10000))
+	bbb, _ := aaa.Int64()
+	percent := ""
+	if bbb != 0 {
+		ccc := decimal.NewFromInt(bbb)
+		ddd := ccc.Div(decimal.NewFromInt(100))
+		percent = fmt.Sprintf("%s%s", ddd.String(), "%")
+	}
 	pltHolderInfoResp := &PLTHolderInfoResp{
 		Address: pltContract.Address,
 		Amount:  utils.AmountWithoutPrecision(pltContract.Amount),
+		Percent: percent,
 	}
 	return pltHolderInfoResp
 }
@@ -258,7 +351,7 @@ type PLTHoldersResp struct {
 	PLTHolderInfos []*PLTHolderInfoResp
 }
 
-func MakePLTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, pltContracts []*PLTContract) *PLTHoldersResp {
+func MakePLTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, pltContracts []*PLTHolderWithPercent) *PLTHoldersResp {
 	pltHoldersResp := &PLTHoldersResp{
 		PageSize:   pageSize,
 		PageNo:     pageNo,
@@ -271,101 +364,94 @@ func MakePLTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount 
 	return pltHoldersResp
 }
 
-type NFTResp struct {
-	NFT string
+type ContractInfoReq struct {
+	Contract string
 }
 
-func MakeNFTResponse(nftContract *NFTContract) *NFTResp {
-	nftResp := &NFTResp{NFT: nftContract.NFT}
+type ContractInfoResp struct {
+	Contract string
+	Type uint64
+	Name string
+	Symbol string
+	Owner string
+	Uri   string
+	Site string
+	Time               uint64
+	TotalSupply uint64
+	AddressNum uint64
+	TransferNum uint64
+}
+
+func MakeContractInfoResponse(nftContract *ContractInfo) *ContractInfoResp {
+	nftResp := &ContractInfoResp{
+		Contract: nftContract.Contract,
+		Type: nftContract.Type,
+		Name: nftContract.Name,
+		Symbol: nftContract.Symbol,
+		Owner: nftContract.Owner,
+		Uri: nftContract.Uri,
+		Site: nftContract.Site,
+		Time: nftContract.Time,
+		TotalSupply: nftContract.TotalSupply,
+		AddressNum: nftContract.AddressNum,
+		TransferNum: nftContract.TransferNum,
+	}
 	return nftResp
 }
 
-type NFTsReq struct {
+type ContractInfosReq struct {
 	PageSize int
 	PageNo   int
 }
 
-type NFTsResp struct {
+type ContractInfosResp struct {
 	PageSize   int
 	PageNo     int
 	TotalPage  int
 	TotalCount int
-	NFTs       []*NFTResp
+	Contracts       []*ContractInfoResp
 }
 
-func MakeNFTsResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTsResp {
-	nftsResp := &NFTsResp{
+func MakeContractInfosResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*ContractInfo) *ContractInfosResp {
+	nftsResp := &ContractInfosResp{
 		PageSize:   pageSize,
 		PageNo:     pageNo,
 		TotalPage:  totalPage,
 		TotalCount: totalCount,
 	}
 	for _, nftContract := range nftContracts {
-		nftsResp.NFTs = append(nftsResp.NFTs, MakeNFTResponse(nftContract))
+		nftsResp.Contracts = append(nftsResp.Contracts, MakeContractInfoResponse(nftContract))
 	}
 	return nftsResp
 }
 
-type NFTTokenResp struct {
+
+type NFTHolderReq struct {
 	NFT   string
 	Token string
 }
 
-func MakeNFTTokenResponse(nftContract *NFTContract) *NFTTokenResp {
-	nftResp := &NFTTokenResp{
-		NFT:   nftContract.NFT,
-		Token: nftContract.Token,
-	}
-	return nftResp
-}
-
-type NFTTokensReq struct {
-	NFT      string
-	PageSize int
-	PageNo   int
-}
-
-type NFTTokensResp struct {
-	PageSize   int
-	PageNo     int
-	TotalPage  int
-	TotalCount int
-	NFTTokens  []*NFTTokenResp
-}
-
-func MakeNFTTokensResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTTokensResp {
-	nftTokensResp := &NFTTokensResp{
-		PageSize:   pageSize,
-		PageNo:     pageNo,
-		TotalPage:  totalPage,
-		TotalCount: totalCount,
-	}
-	for _, nftContract := range nftContracts {
-		nftTokensResp.NFTTokens = append(nftTokensResp.NFTTokens, MakeNFTTokenResponse(nftContract))
-	}
-	return nftTokensResp
-}
-
-type NFTTokenInfoReq struct {
-	NFT   string
-	Token string
-}
-
-type NFTTokenInfoResp struct {
+type NFTHolderResp struct {
 	NFT   string
 	Token string
 	Owner string
-	URI   string
+	Uri   string
 }
 
-func MakeNFTTokenInfoResponse(nftContract *NFTContract) *NFTTokenInfoResp {
-	nftTokenInfoResp := &NFTTokenInfoResp{
+func MakeNFTHolderResponse(nftContract *NFTHolder) *NFTHolderResp {
+	nftTokenInfoResp := &NFTHolderResp{
 		NFT:   nftContract.NFT,
 		Token: nftContract.Token,
 		Owner: nftContract.Owner,
-		URI:   nftContract.Uri,
+		Uri:   nftContract.Uri,
 	}
 	return nftTokenInfoResp
+}
+
+type NFTHoldersReq struct {
+	NFT      string
+	PageSize int
+	PageNo   int
 }
 
 type NFTHoldersOfUserReq struct {
@@ -375,42 +461,16 @@ type NFTHoldersOfUserReq struct {
 	PageNo   int
 }
 
-type NFTHoldersOfUserResp struct {
-	PageSize      int
-	PageNo        int
-	TotalPage     int
-	TotalCount    int
-	NFTTokenInfos []*NFTTokenInfoResp
-}
-
-func MakeNFTHoldersOfUserResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTHoldersOfUserResp {
-	nftHolderByAddressResp := &NFTHoldersOfUserResp{
-		PageSize:   pageSize,
-		PageNo:     pageNo,
-		TotalPage:  totalPage,
-		TotalCount: totalCount,
-	}
-	for _, nftContract := range nftContracts {
-		nftHolderByAddressResp.NFTTokenInfos = append(nftHolderByAddressResp.NFTTokenInfos, MakeNFTTokenInfoResponse(nftContract))
-	}
-	return nftHolderByAddressResp
-}
-
-type NFTHoldersReq struct {
-	NFT      string
-	PageSize int
-	PageNo   int
-}
-
 type NFTHoldersResp struct {
 	PageSize      int
 	PageNo        int
 	TotalPage     int
 	TotalCount    int
-	NFTTokenInfos []*NFTTokenInfoResp
+	NFTTokenInfos []*NFTHolderResp
 }
 
-func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTContract) *NFTHoldersResp {
+
+func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTHolder) *NFTHoldersResp {
 	nftHoldersResp := &NFTHoldersResp{
 		PageSize:   pageSize,
 		PageNo:     pageNo,
@@ -418,9 +478,62 @@ func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount 
 		TotalCount: totalCount,
 	}
 	for _, nftContract := range nftContracts {
-		nftHoldersResp.NFTTokenInfos = append(nftHoldersResp.NFTTokenInfos, MakeNFTTokenInfoResponse(nftContract))
+		nftHoldersResp.NFTTokenInfos = append(nftHoldersResp.NFTTokenInfos, MakeNFTHolderResponse(nftContract))
 	}
 	return nftHoldersResp
+}
+
+type NFTUserReq struct {
+	NFT   string
+	Owner string
+}
+
+type NFTUserResp struct {
+	NFT   string
+	Owner string
+	TokenNumber   uint64
+	Percent string
+}
+
+func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
+	aaa := new(big.Float).Mul(new(big.Float).SetFloat64(nftUser.Percent), new(big.Float).SetInt64(10000))
+	bbb, _ := aaa.Int64()
+	ccc := decimal.NewFromInt(bbb)
+	ddd := ccc.Div(decimal.NewFromInt(100))
+	nftUserResp := &NFTUserResp{
+		NFT:   nftUser.NFT,
+		Owner: nftUser.Owner,
+		TokenNumber: nftUser.TokenNumber,
+		Percent:   fmt.Sprintf("%s%s", ddd.String(), "%"),
+	}
+	return nftUserResp
+}
+
+type NFTUsersReq struct {
+	NFT      string
+	PageSize int
+	PageNo   int
+}
+
+type NFTUsersResp struct {
+	PageSize      int
+	PageNo        int
+	TotalPage     int
+	TotalCount    int
+	NFTUsers []*NFTUserResp
+}
+
+func MakeNFTUsersResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTUser) *NFTUsersResp {
+	nftUsers := &NFTUsersResp{
+		PageSize:   pageSize,
+		PageNo:     pageNo,
+		TotalPage:  totalPage,
+		TotalCount: totalCount,
+	}
+	for _, nftContract := range nftContracts {
+		nftUsers.NFTUsers = append(nftUsers.NFTUsers, MakeNFTUserResponse(nftContract))
+	}
+	return nftUsers
 }
 
 type StakeInfoReq struct {
@@ -505,13 +618,25 @@ type ValidatorInfoResp struct {
 	Address        string
 	DelegateFactor uint64
 	StakeAmount    string
+	Name string
+	Uri   string
+	Percent string `json:",omitempty"`
 }
 
-func MakeValidatorInfoResponse(validator *Validator) *ValidatorInfoResp {
+func MakeValidatorInfoResponse(validator *ValidatorWithPercent) *ValidatorInfoResp {
+	aaa := new(big.Float).Mul(new(big.Float).SetFloat64(validator.Percent), new(big.Float).SetInt64(10000))
+	bbb, _ := aaa.Int64()
+	percent := ""
+	if bbb != 0 {
+		ccc := decimal.NewFromInt(bbb)
+		ddd := ccc.Div(decimal.NewFromInt(100))
+		percent = fmt.Sprintf("%s%s", ddd.String(), "%")
+	}
 	validatorInfoResp := &ValidatorInfoResp{
 		Address:        validator.Address,
 		DelegateFactor: validator.DelegateFactor,
 		StakeAmount:    utils.AmountWithoutPrecision(validator.StakeAmount),
+		Percent: percent,
 	}
 	return validatorInfoResp
 }
@@ -529,7 +654,7 @@ type ValidatorsResp struct {
 	ValidatorInfos []*ValidatorInfoResp
 }
 
-func MakeValidatorsResponse(pageSize int, pageNo int, totalPage int, totalCount int, validators []*Validator) *ValidatorsResp {
+func MakeValidatorsResponse(pageSize int, pageNo int, totalPage int, totalCount int, validators []*ValidatorWithPercent) *ValidatorsResp {
 	validatorsResp := &ValidatorsResp{
 		PageSize:   pageSize,
 		PageNo:     pageNo,

@@ -29,8 +29,7 @@ func (c *TransactionController) Transactions() {
 		panic(err)
 	}
 	transactions := make([]*models.Transaction, 0)
-	db.Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("time desc").
-		Preload("Events").Preload("TransactionDetails").Find(&transactions)
+	db.Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("time desc").Find(&transactions)
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Count(&transactionNum)
 	c.Data["json"] = models.MakeTransactionsResponse(transactionsReq.PageSize, transactionsReq.PageNo,
@@ -45,8 +44,7 @@ func (c *TransactionController) TransactionsOfContract() {
 		panic(err)
 	}
 	transactions := make([]*models.Transaction, 0)
-	db.Where("`to` = ?", transactionsOfContractReq.Contract).Limit(transactionsOfContractReq.PageSize).Offset(transactionsOfContractReq.PageSize * transactionsOfContractReq.PageNo).Order("time desc").
-		Preload("Events").Preload("TransactionDetails").Find(&transactions)
+	db.Where("`to` = ?", transactionsOfContractReq.Contract).Limit(transactionsOfContractReq.PageSize).Offset(transactionsOfContractReq.PageSize * transactionsOfContractReq.PageNo).Order("time desc").Find(&transactions)
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Where("`to` = ?", transactionsOfContractReq.Contract).Count(&transactionNum)
 	c.Data["json"] = models.MakeTransactionsResponse(transactionsOfContractReq.PageSize, transactionsOfContractReq.PageNo,
@@ -67,5 +65,20 @@ func (c *TransactionController) TransactionsOfUser() {
 	db.Model(&models.Transaction{}).Where("`from` = ?", transactionsOfUserReq.User).Count(&transactionNum)
 	c.Data["json"] = models.MakeTransactionsResponse(transactionsOfUserReq.PageSize, transactionsOfUserReq.PageNo,
 		(int(transactionNum)+transactionsOfUserReq.PageSize-1)/transactionsOfUserReq.PageSize, int(transactionNum), transactions)
+	c.ServeJSON()
+}
+
+func (c *TransactionController) TransactionsDetails() {
+	var transactionsReq models.TransactionDetailsOfTransactionReq
+	var err error
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionsReq); err != nil {
+		panic(err)
+	}
+	transactions := make([]*models.TransactionDetailWithInfo, 0)
+	db.Where("transaction_hash = ?", transactionsReq.Hash).Preload("ContractInfo").Preload("NFTHolder").Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("time desc").Find(&transactions)
+	var transactionNum int64
+	db.Model(&models.TransactionDetailWithInfo{}).Where("transaction_hash = ?", transactionsReq.Hash).Count(&transactionNum)
+	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionsReq.PageSize, transactionsReq.PageNo,
+		(int(transactionNum)+transactionsReq.PageSize-1)/transactionsReq.PageSize, int(transactionNum), transactions)
 	c.ServeJSON()
 }

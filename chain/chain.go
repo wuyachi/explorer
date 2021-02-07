@@ -10,6 +10,7 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/contracts/native"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/palettechain/palette-go-sdk"
 	"github.com/palettechain/palette-go-sdk/client"
 	"gorm.io/driver/mysql"
@@ -35,7 +36,6 @@ func NewChain(cfg *conf.Config) *Chain {
 		sdk.NewAccount()
 	}
 	chain.sdk = sdk
-	//db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:3306)/palette?charset=utf8"), &gorm.Config{})
 	db, err := gorm.Open(mysql.Open(cfg.DBConfig.User+":"+
 		cfg.DBConfig.Password+"@tcp("+cfg.DBConfig.URL+")/"+
 		cfg.DBConfig.Scheme+"?charset=utf8"), &gorm.Config{})
@@ -43,8 +43,8 @@ func NewChain(cfg *conf.Config) *Chain {
 		panic(err)
 	}
 	err = db.AutoMigrate(&models.Chain{}, &models.Block{}, &models.Transaction{}, &models.Event{},
-		&models.PLTContract{}, &models.NFTContract{}, &models.Validator{}, &models.Propose{},
-		&models.Stake{}, &models.TransactionDetail{})
+		&models.PLTHolder{}, &models.NFTHolder{}, &models.Validator{}, &models.Propose{},
+		&models.Stake{}, &models.TransactionDetail{}, &models.ContractInfo{})
 	if err != nil {
 		panic(err)
 	}
@@ -54,10 +54,29 @@ func NewChain(cfg *conf.Config) *Chain {
 	paletteChain.Id = 1
 	paletteChain.Name = "palette"
 	db.Create(paletteChain)
-	adminAccount := new(models.PLTContract)
+	adminAccount := new(models.PLTHolder)
 	adminAccount.Address = strings.ToLower(common.HexToAddress(cfg.NodeConfig.Admin).String())
 	adminAccount.Amount = 600000000000000000
 	db.Create(adminAccount)
+	contractInfo := new(models.ContractInfo)
+	contractInfo.Type = models.CONTRACT_TYPE_PLT
+	contractInfo.Contract = "0x0000000000000000000000000000000000000103"
+	name, err :=  sdk.PLTName()
+	if err != nil {
+		panic(err)
+	}
+	symbol, err :=  sdk.PLTSymbol()
+	if err != nil {
+		panic(err)
+	}
+	supply, err :=  sdk.PLTTotalSupply()
+	if err != nil {
+		panic(err)
+	}
+	contractInfo.Name = name
+	contractInfo.Symbol = symbol
+	contractInfo.TotalSupply = supply.Uint64()
+	db.Debug().Create(contractInfo)
 	return chain
 }
 
@@ -101,8 +120,9 @@ func (this *Chain) ListenChain() {
 
 func (this *Chain) HandleNewBlock(height uint64) error {
 	//
-	pltContractMap := make(map[string]*models.PLTContract, 0)
-	nftContractMap := make(map[string]*models.NFTContract, 0)
+	pltContractMap := make(map[string]*models.PLTHolder, 0)
+	nftContractMap := make(map[string]*models.NFTHolder, 0)
+	contractInfoMap := make(map[string]*models.ContractInfo, 0)
 	proposeMap := make(map[string]*models.Propose, 0)
 	stakeMap := make(map[string]*models.Stake, 0)
 	// parse block
@@ -121,6 +141,13 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 	blockInfo.TxHash = block.TxHash().String()
 	blockInfo.TxNumber = uint64(block.Transactions().Len())
 	blockInfo.Time = block.Time()
+	blockInfo.Size = uint64(block.Size())
+	istanbulExtra, err := types.ExtractIstanbulExtra(block.Header())
+	if err != nil {
+		blockInfo.Validators = 0
+	} else {
+		blockInfo.Validators = uint64(len(istanbulExtra.Validators))
+	}
 	// parse all transactions
 	blockInfo.Transactions = make([]*models.Transaction, 0)
 	for _, transaction := range block.Transactions() {
@@ -144,17 +171,20 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		transactionInfo.Value = utils.AbandonPrecision(transaction.Value())
 		transactionInfo.BlockNumber = blockInfo.Number
 		transactionInfo.Time = blockInfo.Time
+		transactionInfo.Type = models.TRANSACTION__TYPE_CONTRACTS
 		blockInfo.Transactions = append(blockInfo.Transactions, transactionInfo)
 		// parse all events
-		events, err := this.sdk.GetEventLog(transaction.Hash())
+		events, status, err := this.sdk.GetEventLog(transaction.Hash())
 		if err != nil {
 			return err
 		}
+		transactionInfo.Status = status
 		for _, event := range events {
 			eventInfo := new(models.Event)
 			eventInfo.Number = event.BlockNumber
 			eventInfo.Contract = strings.ToLower(event.Contract.String())
 			eventInfo.EventId = event.EventId.String()
+			eventInfo.Time = blockInfo.Time
 			if len(event.Topic) > 0 {
 				eventInfo.Topic1 = event.Topic[0].String()
 			}
@@ -185,22 +215,23 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					txDetailInfo.Contract = strings.ToLower(event.Contract.String())
 					txDetailInfo.From = from
 					txDetailInfo.To = to
+					txDetailInfo.Time = blockInfo.Time
 					txDetailInfo.Value = fmt.Sprintf("%d", amount)
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 
-					var fromUser *models.PLTContract
+					var fromUser *models.PLTHolder
 					fromUser, ok := pltContractMap[from]
 					if !ok {
-						fromUser = new(models.PLTContract)
+						fromUser = new(models.PLTHolder)
 						this.db.Where("address = ?", from).First(fromUser)
 						fromUser.Address = from
 						pltContractMap[from] = fromUser
 					}
 
-					var toUser *models.PLTContract
+					var toUser *models.PLTHolder
 					toUser, ok = pltContractMap[to]
 					if !ok {
-						toUser = new(models.PLTContract)
+						toUser = new(models.PLTHolder)
 						this.db.Where("address = ?", to).First(toUser)
 						toUser.Address = to
 						pltContractMap[to] = toUser
@@ -209,7 +240,6 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					if fromUser.Amount < amount {
 						logs.Error("from : %s amount is %d, but transfer amount is %d", fromUser.Address, fromUser.Amount, amount)
 					}
-
 					fromUser.Amount = fromUser.Amount - amount
 					toUser.Amount = toUser.Amount + amount
 				}
@@ -222,26 +252,61 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					nft := strings.ToLower(event.Contract.String())
 					to := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
 					tokenId := new(big.Int).SetBytes(event.Data)
-					token := common.BigToHash(tokenId).String()
+					token := strings.ToLower(tokenId.String())
 
 					txDetailInfo := new(models.TransactionDetail)
 					txDetailInfo.Contract = strings.ToLower(event.Contract.String())
 					txDetailInfo.From = from
 					txDetailInfo.To = to
 					txDetailInfo.Value = token
+					txDetailInfo.Time = blockInfo.Time
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 
-					var tokenInfo *models.NFTContract
+					var tokenInfo *models.NFTHolder
 					tokenInfo, ok := nftContractMap[nft+token]
 					if !ok {
-						tokenInfo = new(models.NFTContract)
+						tokenInfo = new(models.NFTHolder)
 						this.db.Where("nft = ? and token = ?", nft, token).First(tokenInfo)
 						tokenInfo.NFT = nft
 						tokenInfo.Token = token
 						nftContractMap[nft+token] = tokenInfo
 					}
 					tokenInfo.Owner = to
-					tokenInfo.Uri, _ = this.sdk.NFTTokenUri(event.Contract, tokenId)
+					tokenInfo.Uri, err = this.sdk.NFTTokenUri(event.Contract, tokenId)
+					if err != nil {
+						return err
+					}
+				} else if event.EventId.String() == client.NFTEventID_Deploy {
+					nft := strings.ToLower(event.Contract.String())
+					name, err :=  this.sdk.NFTName(event.Contract)
+					if err != nil {
+						return err
+					}
+					symbol, err :=  this.sdk.NFTSymbol(event.Contract)
+					if err != nil {
+						return err
+					}
+					owner, err :=  this.sdk.NFTOwner(event.Contract)
+					if err != nil {
+						return err
+					}
+					supply, err :=  this.sdk.NFTTotalSupply(event.Contract)
+					if err != nil {
+						return err
+					}
+					contractInfoMap[nft] = &models.ContractInfo{
+						Contract:    nft,
+						Name:        name,
+						Symbol:      symbol,
+						Owner:       strings.ToLower(owner.String()),
+						Uri:"",
+						Site:"",
+						Type: models.CONTRACT_TYPE_NFT,
+						Time: blockInfo.Time,
+						TotalSupply: supply.Uint64(),
+						AddressNum:  0,
+						TransferNum: 0,
+					}
 				}
 				continue
 			}
@@ -310,12 +375,17 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		}
 	}
 
-	pltContractInfos := make([]*models.PLTContract, 0)
+	contractInfos := make([]*models.ContractInfo, 0)
+	for _, contract := range contractInfoMap {
+		contractInfos = append(contractInfos, contract)
+	}
+
+	pltContractInfos := make([]*models.PLTHolder, 0)
 	for _, pltContract := range pltContractMap {
 		pltContractInfos = append(pltContractInfos, pltContract)
 	}
 
-	nftContractInfos := make([]*models.NFTContract, 0)
+	nftContractInfos := make([]*models.NFTHolder, 0)
 	for _, nftContract := range nftContractMap {
 		nftContractInfos = append(nftContractInfos, nftContract)
 	}
@@ -355,6 +425,9 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 	this.chain.Height = height
 	// update db
 	this.db.Create(blockInfo)
+	for _, contract := range contractInfos {
+		this.db.Save(contract)
+	}
 	for _, pltContract := range pltContractInfos {
 		this.db.Save(pltContract)
 	}
@@ -372,5 +445,46 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		this.db.Save(validatorInfos)
 	}
 	this.db.Save(this.chain)
+	this.doStatistic()
 	return nil
+}
+
+func (this *Chain) doStatistic() {
+	contracts1 := make([]*models.ContractInfo, 0)
+	this.db.Table("transaction_details").Select("contract, count(*) as transfer_num").Group("Contract").Find(&contracts1)
+	contracts2 := make([]*models.ContractInfo, 0)
+	this.db.Table("nft_holders").Select("nft as contract, count(token) as total_supply, count(distinct(owner)) as address_num").Group("nft").Find(&contracts2)
+	contracts3 := make([]*models.ContractInfo, 0)
+	this.db.Table("plt_holders").Select("count(address) as address_num").Find(&contracts3)
+	contracts := make([]*models.ContractInfo, 0)
+	this.db.Model(&models.ContractInfo{}).Find(&contracts)
+	contractInfoMap := make(map[string]*models.ContractInfo, 0)
+	for _, contract := range contracts {
+		contractInfoMap[contract.Contract] = contract
+	}
+	for _, contract := range contracts1 {
+		item, ok := contractInfoMap[contract.Contract]
+		if !ok {
+			continue
+		}
+		item.TransferNum = contract.TransferNum
+	}
+	for _, contract := range contracts2 {
+		item, ok := contractInfoMap[contract.Contract]
+		if !ok {
+			continue
+		}
+		item.TotalSupply = contract.TotalSupply
+		item.AddressNum = contract.AddressNum
+	}
+	for _, contract := range contracts3 {
+		item, ok := contractInfoMap[native.PLTContractAddress]
+		if !ok {
+			continue
+		}
+		item.AddressNum = contract.AddressNum
+	}
+	this.db.Save(contracts)
+	//
+	this.db.Where("amount = 0").Delete(&models.PLTHolder{})
 }

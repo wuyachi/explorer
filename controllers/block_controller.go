@@ -41,7 +41,7 @@ func (c *BlockController) Blocks() {
 		panic(err)
 	}
 	blocks := make([]*models.Block, 0)
-	db.Debug().Limit(blocksReq.PageSize).Offset(blocksReq.PageSize * blocksReq.PageNo).Order("number desc").Preload("Transactions").Find(&blocks)
+	db.Limit(blocksReq.PageSize).Offset(blocksReq.PageSize * blocksReq.PageNo).Order("number desc").Preload("Transactions").Find(&blocks)
 	var blockNum int64
 	db.Model(&models.Block{}).Count(&blockNum)
 	c.Data["json"] = models.MakeBlocksResponse(blocksReq.PageSize, blocksReq.PageNo, (int(blockNum)+blocksReq.PageSize-1)/blocksReq.PageSize, int(blockNum), blocks)

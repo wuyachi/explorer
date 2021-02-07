@@ -16,10 +16,13 @@ func (c *ValidatorController) Validators() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &validatorsReq); err != nil {
 		panic(err)
 	}
-	validators := make([]*models.Validator, 0)
-	db.Limit(validatorsReq.PageSize).Offset(validatorsReq.PageSize * validatorsReq.PageNo).Find(&validators)
+	validators := make([]*models.ValidatorWithPercent, 0)
+	db.Table("(?) as u, validators", db.Model(&models.ValidatorWithPercent{}).Select("sum(stake_amount) as total")).
+		Select("address, delegate_factor, stake_amount, stake_amount/total as percent, name, uri").
+		Limit(validatorsReq.PageSize).Offset(validatorsReq.PageSize * validatorsReq.PageNo).Order("stake_amount desc").Find(&validators)
+
 	var validatorNum int64
-	db.Model(&models.Validator{}).Count(&validatorNum)
+	db.Model(&models.ValidatorWithPercent{}).Count(&validatorNum)
 	c.Data["json"] = models.MakeValidatorsResponse(validatorsReq.PageSize, validatorsReq.PageNo,
 		(int(validatorNum)+validatorsReq.PageSize-1)/validatorsReq.PageSize, int(validatorNum), validators)
 	c.ServeJSON()
@@ -31,7 +34,7 @@ func (c *ValidatorController) ValidatorInfo() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &validatorInfoReq); err != nil {
 		panic(err)
 	}
-	validator := new(models.Validator)
+	validator := new(models.ValidatorWithPercent)
 	db.Where("address = ?", validatorInfoReq.Address).First(validator)
 	c.Data["json"] = models.MakeValidatorInfoResponse(validator)
 	c.ServeJSON()

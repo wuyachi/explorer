@@ -1,5 +1,20 @@
 package models
 
+const (
+	TRANSACTION_TYPE_TRANSFER = iota
+	TRANSACTION__TYPE_CONTRACTS
+)
+
+const (
+	TRANSACTION_STATUS_FAILED = iota
+	TRANSACTION_STATUS_SUCCESS
+)
+
+const (
+	CONTRACT_TYPE_PLT = iota
+	CONTRACT_TYPE_NFT
+)
+
 type Chain struct {
 	Id           uint64 `gorm:"primaryKey;type:bigint(20);not null;auto_increment"`
 	Name         string `gorm:"size:64"`
@@ -14,6 +29,8 @@ type Chain struct {
 type Block struct {
 	Hash         string         `gorm:"primaryKey;size:66;not null"`
 	GasLimit     uint64         `gorm:"type:bigint(20);not null"`
+	Size     uint64         `gorm:"type:bigint(20);not null"`
+	Validators     uint64         `gorm:"type:bigint(20);not null"`
 	GasUsed      uint64         `gorm:"type:bigint(20);not null"`
 	Difficulty   uint64         `gorm:"type:bigint(20);not null"`
 	Number       uint64         `gorm:"type:bigint(20);not null"`
@@ -36,6 +53,8 @@ type Transaction struct {
 	Value              uint64               `gorm:"type:bigint(20);not null"`
 	Time               uint64               `gorm:"type:bigint(20);not null"`
 	BlockNumber        uint64               `gorm:"type:bigint(20);not null"`
+	Type uint64               `gorm:"type:bigint(20);not null"`
+	Status uint64               `gorm:"type:bigint(20);not null"`
 	BlockHash          string               `gorm:"size:66;not null"`
 	Block              *Block               `gorm:"foreignKey:BlockHash;references:Hash"`
 	Events             []*Event             `gorm:"foreignKey:TransactionHash;references:Hash"`
@@ -47,8 +66,25 @@ type TransactionDetail struct {
 	From            string       `gorm:"size:42;not null"`
 	To              string       `gorm:"size:42;not null"`
 	Value           string       `gorm:"size:66;not null"`
+	Time               uint64               `gorm:"type:bigint(20);not null"`
 	TransactionHash string       `gorm:"size:66;not null"`
 	Transaction     *Transaction `gorm:"foreignKey:TransactionHash;references:Hash"`
+}
+
+type TransactionDetailWithInfo struct {
+	Contract        string       `gorm:"size:42;not null"`
+	ContractInfo             *ContractInfo     `gorm:"foreignKey:Contract;references:Contract"`
+	From            string       `gorm:"size:42;not null"`
+	To              string       `gorm:"size:42;not null"`
+	Value           string       `gorm:"size:66;not null"`
+	NFTHolder             *NFTHolder     `gorm:"foreignKey:Contract,Value;references:NFT,Token"`
+	Time               uint64               `gorm:"type:bigint(20);not null"`
+	TransactionHash string       `gorm:"size:66;not null"`
+	Transaction     *Transaction `gorm:"foreignKey:TransactionHash;references:Hash"`
+}
+
+func (TransactionDetailWithInfo) TableName() string {
+	return "transaction_details"
 }
 
 type Event struct {
@@ -60,20 +96,56 @@ type Event struct {
 	Topic3          string       `gorm:"size:66;not null"`
 	Topic4          string       `gorm:"size:66;not null"`
 	Data            string       `gorm:"size:4096;not null"`
+	Time               uint64               `gorm:"type:bigint(20);not null"`
 	TransactionHash string       `gorm:"size:66;not null"`
 	Transaction     *Transaction `gorm:"foreignKey:TransactionHash;references:Hash"`
 }
 
-type PLTContract struct {
+type PLTHolder struct {
 	Address string `gorm:"primaryKey;size:42;not null"`
 	Amount  uint64 `gorm:"type:bigint(20);not null"`
 }
 
-type NFTContract struct {
+type PLTHolderWithPercent struct {
+	Address string `gorm:"primaryKey;size:42;not null"`
+	Amount  uint64 `gorm:"type:bigint(20);not null"`
+	Percent float64 `gorm:"not null"`
+}
+
+func (PLTHolderWithPercent) TableName() string {
+	return "plt_holders"
+}
+
+type NFTHolder struct {
 	NFT   string `gorm:"primaryKey;size:42;not null"`
 	Token string `gorm:"primaryKey;size:42;not null"`
 	Owner string `gorm:"size:42;not null"`
 	Uri   string `gorm:"size:66;not null"`
+}
+
+type NFTUser struct {
+	NFT   string `gorm:"primaryKey;size:42;not null"`
+	Owner string `gorm:"size:42;not null"`
+	TokenNumber   uint64 `gorm:"type:bigint(20);not null"`
+	Percent float64 `gorm:"not null"`
+}
+
+func (NFTUser) TableName() string {
+	return "nft_holders"
+}
+
+type ContractInfo struct {
+	Contract string `gorm:"primaryKey;size:42;not null"`
+	Type uint64               `gorm:"type:bigint(20);not null"`
+	Name string `gorm:"size:42;not null"`
+	Symbol string  `gorm:"size:42;not null"`
+	Owner string  `gorm:"size:42;not null"`
+	Uri   string `gorm:"size:66;not null"`
+	Site string `gorm:"size:66;not null"`
+	Time uint64 `gorm:"type:bigint(20);not null"`
+	TotalSupply uint64 `gorm:"type:bigint(20);not null"`
+	AddressNum uint64 `gorm:"type:bigint(20);not null"`
+	TransferNum uint64 `gorm:"type:bigint(20);not null"`
 }
 
 type Stake struct {
@@ -86,6 +158,21 @@ type Validator struct {
 	Address        string `gorm:"primaryKey;size:42;not null"`
 	DelegateFactor uint64 `gorm:"type:bigint(20);not null"`
 	StakeAmount    uint64 `gorm:"type:bigint(20);not null"`
+	Name string `gorm:"size:66;not null"`
+	Uri   string `gorm:"size:66;not null"`
+}
+
+type ValidatorWithPercent struct {
+	Address        string `gorm:"primaryKey;size:42;not null"`
+	DelegateFactor uint64 `gorm:"type:bigint(20);not null"`
+	StakeAmount    uint64 `gorm:"type:bigint(20);not null"`
+	Name string `gorm:"size:66;not null"`
+	Uri   string `gorm:"size:66;not null"`
+	Percent float64 `gorm:"not null"`
+}
+
+func (ValidatorWithPercent) TableName() string {
+	return "validators"
 }
 
 type Propose struct {

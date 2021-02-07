@@ -61,15 +61,15 @@ func NewChain(cfg *conf.Config) *Chain {
 	contractInfo := new(models.ContractInfo)
 	contractInfo.Type = models.CONTRACT_TYPE_PLT
 	contractInfo.Contract = "0x0000000000000000000000000000000000000103"
-	name, err :=  sdk.PLTName()
+	name, err := sdk.PLTName()
 	if err != nil {
 		panic(err)
 	}
-	symbol, err :=  sdk.PLTSymbol()
+	symbol, err := sdk.PLTSymbol()
 	if err != nil {
 		panic(err)
 	}
-	supply, err :=  sdk.PLTTotalSupply()
+	supply, err := sdk.PLTTotalSupply()
 	if err != nil {
 		panic(err)
 	}
@@ -278,19 +278,19 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					}
 				} else if event.EventId.String() == client.NFTEventID_Deploy {
 					nft := strings.ToLower(event.Contract.String())
-					name, err :=  this.sdk.NFTName(event.Contract)
+					name, err := this.sdk.NFTName(event.Contract)
 					if err != nil {
 						return err
 					}
-					symbol, err :=  this.sdk.NFTSymbol(event.Contract)
+					symbol, err := this.sdk.NFTSymbol(event.Contract)
 					if err != nil {
 						return err
 					}
-					owner, err :=  this.sdk.NFTOwner(event.Contract)
+					owner, err := this.sdk.NFTOwner(event.Contract)
 					if err != nil {
 						return err
 					}
-					supply, err :=  this.sdk.NFTTotalSupply(event.Contract)
+					supply, err := this.sdk.NFTTotalSupply(event.Contract)
 					if err != nil {
 						return err
 					}
@@ -299,10 +299,10 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						Name:        name,
 						Symbol:      symbol,
 						Owner:       strings.ToLower(owner.String()),
-						Uri:"",
-						Site:"",
-						Type: models.CONTRACT_TYPE_NFT,
-						Time: blockInfo.Time,
+						Uri:         "",
+						Site:        "",
+						Type:        models.CONTRACT_TYPE_NFT,
+						Time:        blockInfo.Time,
 						TotalSupply: supply.Uint64(),
 						AddressNum:  0,
 						TransferNum: 0,

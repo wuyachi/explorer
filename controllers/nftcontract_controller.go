@@ -126,6 +126,3 @@ func (c *NFTContractController) NFTTransactions() {
 		(int(transactionDetailsNum)+transactionDetailsReq.PageSize-1)/transactionDetailsReq.PageSize, int(transactionDetailsNum), transactionDetails)
 	c.ServeJSON()
 }
-
-
-

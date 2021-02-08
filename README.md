@@ -874,8 +874,8 @@ Example Response
                 "AddressNum": 1,
                 "TransferNum": 9
             },
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "1",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat1.jpeg"
@@ -1224,7 +1224,7 @@ curl --location --request POST 'http://localhost:8080/v1/nfttokeninfo' \
 Example Response
 ```
 {
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "Token": "1",
     "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
     "Uri": "cat1.jpeg"
@@ -1276,8 +1276,8 @@ Example Response
             "Time": 1612434309,
             "Status": 1,
             "TransactionHash": "0x11e2014375403533664e1e7c92854e654eb375a83ad28d1239e39f80a84e4cc0",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "1",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat1.jpeg"
@@ -1291,8 +1291,8 @@ Example Response
             "Time": 1612434299,
             "Status": 1,
             "TransactionHash": "0xeef1decdeb98a12ad4bba6e759c71b2b53b852b8b5edbcd927b9299d791a8814",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "1",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat1.jpeg"
@@ -1306,8 +1306,8 @@ Example Response
             "Time": 1612427249,
             "Status": 1,
             "TransactionHash": "0xc449123ec72caea8fc25b8ad03b570287ac71da18a2eda1534337a076062d040",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "1",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat1.jpeg"
@@ -1354,19 +1354,19 @@ Example Response
     "TotalCount": 3,
     "NFTTokenInfos": [
         {
-            "NFT": "0x0000000000000000000000000000000000001001",
+            "Contract": "0x0000000000000000000000000000000000001001",
             "Token": "1",
             "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
             "Uri": "cat1.jpeg"
         },
         {
-            "NFT": "0x0000000000000000000000000000000000001001",
+            "Contract": "0x0000000000000000000000000000000000001001",
             "Token": "2",
             "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
             "Uri": "cat2.jpeg"
         },
         {
-            "NFT": "0x0000000000000000000000000000000000001001",
+            "Contract": "0x0000000000000000000000000000000000001001",
             "Token": "3",
             "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
             "Uri": "cat3.jpeg"
@@ -1410,19 +1410,19 @@ Example Response
     "TotalCount": 3,
     "NFTTokenInfos": [
         {
-            "NFT": "0x0000000000000000000000000000000000001001",
+            "Contract": "0x0000000000000000000000000000000000001001",
             "Token": "1",
             "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
             "Uri": "cat1.jpeg"
         },
         {
-            "NFT": "0x0000000000000000000000000000000000001001",
+            "Contract": "0x0000000000000000000000000000000000001001",
             "Token": "2",
             "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
             "Uri": "cat2.jpeg"
         },
         {
-            "NFT": "0x0000000000000000000000000000000000001001",
+            "Contract": "0x0000000000000000000000000000000000001001",
             "Token": "3",
             "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
             "Uri": "cat3.jpeg"
@@ -1473,8 +1473,8 @@ Example Response
             "Time": 1612434369,
             "Status": 1,
             "TransactionHash": "0x39a019e2fd0e17168763dcb6c11ab06103a9f9c5a98bc260fb5ddddddacee0b3",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "3",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat3.jpeg"
@@ -1488,8 +1488,8 @@ Example Response
             "Time": 1612434364,
             "Status": 1,
             "TransactionHash": "0xa16958915989fac051715356ce6f8a87f13acad230d68229a4de7852ebad93ec",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "3",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat3.jpeg"
@@ -1503,8 +1503,8 @@ Example Response
             "Time": 1612434344,
             "Status": 1,
             "TransactionHash": "0x7683e2f61d6168d838841cb4e6f0bccdce4488b7ef2abad797498362eeb38058",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "2",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat2.jpeg"
@@ -1518,8 +1518,8 @@ Example Response
             "Time": 1612434339,
             "Status": 1,
             "TransactionHash": "0xc9e62f19bbf4956db22117e4f80eb1dee0a421e0db7e95c7e9b1e7c02a2afd3b",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "2",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat2.jpeg"
@@ -1533,8 +1533,8 @@ Example Response
             "Time": 1612434309,
             "Status": 1,
             "TransactionHash": "0x11e2014375403533664e1e7c92854e654eb375a83ad28d1239e39f80a84e4cc0",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "1",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat1.jpeg"
@@ -1548,8 +1548,8 @@ Example Response
             "Time": 1612434299,
             "Status": 1,
             "TransactionHash": "0xeef1decdeb98a12ad4bba6e759c71b2b53b852b8b5edbcd927b9299d791a8814",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "1",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat1.jpeg"
@@ -1563,8 +1563,8 @@ Example Response
             "Time": 1612427249,
             "Status": 1,
             "TransactionHash": "0xc449123ec72caea8fc25b8ad03b570287ac71da18a2eda1534337a076062d040",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "1",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat1.jpeg"
@@ -1578,8 +1578,8 @@ Example Response
             "Time": 1612427124,
             "Status": 1,
             "TransactionHash": "0x1548a65af2c7205ff5b345238b7e0555864d2da1e9a0130e50384e69c3bc748c",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "3",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat3.jpeg"
@@ -1593,8 +1593,8 @@ Example Response
             "Time": 1612427049,
             "Status": 1,
             "TransactionHash": "0xdeab8611e43a4fb6a7de9115da057e6d048e7b11bbfacd87e1ad53c2b0720432",
-            "NFTHolder": {
-                "NFT": "0x0000000000000000000000000000000000001001",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
                 "Token": "2",
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat2.jpeg"
@@ -1639,13 +1639,13 @@ Example Response
     "TotalCount": 2,
     "NFTUsers": [
         {
-            "NFT": "0x0000000000000000000000000000000000001002",
+            "Contract": "0x0000000000000000000000000000000000001002",
             "Owner": "0x2cd9d589d46122e4eddc495b49feda0b526c1af7",
             "TokenNumber": 2,
             "Percent": "66.66%"
         },
         {
-            "NFT": "0x0000000000000000000000000000000000001002",
+            "Contract": "0x0000000000000000000000000000000000001002",
             "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
             "TokenNumber": 1,
             "Percent": "33.32%"

@@ -231,7 +231,7 @@ type TransactionDetailResp struct {
 	Status          uint64
 	TransactionHash string
 	ContractInfo    *ContractInfoResp `json:",omitempty"`
-	NFTHolder       *NFTHolderResp    `json:",omitempty"`
+	TokenInfo       *NFTHolderResp    `json:",omitempty"`
 }
 
 func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo) *TransactionDetailResp {
@@ -248,7 +248,7 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 		transactionDetailResp.ContractInfo = MakeContractInfoResponse(transactionDetail.ContractInfo)
 	}
 	if transactionDetail.NFTHolder != nil {
-		transactionDetailResp.NFTHolder = MakeNFTHolderResponse(transactionDetail.NFTHolder)
+		transactionDetailResp.TokenInfo = MakeNFTHolderResponse(transactionDetail.NFTHolder)
 	}
 	return transactionDetailResp
 }
@@ -422,12 +422,12 @@ func MakeContractInfosResponse(pageSize int, pageNo int, totalPage int, totalCou
 }
 
 type NFTHolderReq struct {
-	NFT   string
+	Contract   string
 	Token string
 }
 
 type NFTHolderResp struct {
-	NFT   string
+	Contract   string
 	Token string
 	Owner string
 	Uri   string
@@ -435,7 +435,7 @@ type NFTHolderResp struct {
 
 func MakeNFTHolderResponse(nftContract *NFTHolder) *NFTHolderResp {
 	nftTokenInfoResp := &NFTHolderResp{
-		NFT:   nftContract.NFT,
+		Contract:   nftContract.NFT,
 		Token: nftContract.Token,
 		Owner: nftContract.Owner,
 		Uri:   nftContract.Uri,
@@ -444,13 +444,13 @@ func MakeNFTHolderResponse(nftContract *NFTHolder) *NFTHolderResp {
 }
 
 type NFTHoldersReq struct {
-	NFT      string
+	Contract      string
 	PageSize int
 	PageNo   int
 }
 
 type NFTHoldersOfUserReq struct {
-	NFT      string
+	Contract      string
 	Address  string
 	PageSize int
 	PageNo   int
@@ -504,7 +504,7 @@ func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
 }
 
 type NFTUsersReq struct {
-	NFT      string
+	Contract      string
 	PageSize int
 	PageNo   int
 }

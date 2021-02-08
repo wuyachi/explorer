@@ -478,12 +478,12 @@ func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount 
 }
 
 type NFTUserReq struct {
-	NFT   string
+	Contract   string
 	Owner string
 }
 
 type NFTUserResp struct {
-	NFT         string
+	Contract         string
 	Owner       string
 	TokenNumber uint64
 	Percent     string
@@ -495,7 +495,7 @@ func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
 	ccc := decimal.NewFromInt(bbb)
 	ddd := ccc.Div(decimal.NewFromInt(100))
 	nftUserResp := &NFTUserResp{
-		NFT:         nftUser.NFT,
+		Contract:         nftUser.NFT,
 		Owner:       nftUser.Owner,
 		TokenNumber: nftUser.TokenNumber,
 		Percent:     fmt.Sprintf("%s%s", ddd.String(), "%"),

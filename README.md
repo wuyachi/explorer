@@ -1207,7 +1207,7 @@ http://localhost:8080/v1/nfttokeninfo
 BODY raw
 ```
 {
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "Token": "1"
 }
 ```
@@ -1216,7 +1216,7 @@ Example Request
 ```
 curl --location --request POST 'http://localhost:8080/v1/nfttokeninfo' \
 --data-raw '{
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "Token": "1"
 }'
 ```
@@ -1327,7 +1327,7 @@ http://localhost:8080/v1/nftholdersofuser
 BODY raw
 ```
 {
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "Address": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
     "PageNo":0,
     "PageSize":10
@@ -1338,7 +1338,7 @@ Example Request
 ```
 curl --location --request POST 'http://localhost:8080/v1/nftholdersofuser' \
 --data-raw '{
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "Address": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
     "PageNo":0,
     "PageSize":10
@@ -1385,7 +1385,7 @@ http://localhost:8080/v1/nftholders
 BODY raw
 ```
 {
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "PageNo":0,
     "PageSize":10
 }
@@ -1395,7 +1395,7 @@ Example Request
 ```
 curl --location --request POST 'http://localhost:8080/v1/nftholders' \
 --data-raw '{
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "PageNo":0,
     "PageSize":10
 }'
@@ -1441,7 +1441,7 @@ http://localhost:8080/v1/nfttransactions
 BODY raw
 ```
 {
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "PageNo":0,
     "PageSize":10
 }
@@ -1451,7 +1451,7 @@ Example Request
 ```
 curl --location --request POST 'http://localhost:8080/v1/nfttransactions' \
 --data-raw '{
-    "NFT": "0x0000000000000000000000000000000000001001",
+    "Contract": "0x0000000000000000000000000000000000001001",
     "PageNo":0,
     "PageSize":10
 }'
@@ -1614,7 +1614,7 @@ http://localhost:8080/v1/nftusers
 BODY raw
 ```
 {
-    "NFT": "0x0000000000000000000000000000000000001002",
+    "Contract": "0x0000000000000000000000000000000000001002",
     "PageNo":0,
     "PageSize":10
 }
@@ -1624,7 +1624,7 @@ Example Request
 ```
 curl --location --request POST 'http://localhost:8080/v1/nftusers' \
 --data-raw '{
-    "NFT": "0x0000000000000000000000000000000000001002",
+    "Contract": "0x0000000000000000000000000000000000001002",
     "PageNo":0,
     "PageSize":10
 }'

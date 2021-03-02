@@ -17,6 +17,7 @@ func init() {
 		beego.NSRouter("/transactionsofcontract/", &controllers.TransactionController{}, "post:TransactionsOfContract"),
 		beego.NSRouter("/transactionsofuser/", &controllers.TransactionController{}, "post:TransactionsOfUser"),
 		beego.NSRouter("/transactiondetails/", &controllers.TransactionController{}, "post:TransactionsDetails"),
+		beego.NSRouter("/plt/", &controllers.PLTContractController{}, "post:PLT"),
 		beego.NSRouter("/pltholderinfo/", &controllers.PLTContractController{}, "post:PLTHolderInfo"),
 		beego.NSRouter("/pltholders/", &controllers.PLTContractController{}, "post:PLTHolders"),
 		beego.NSRouter("/plttransactions/", &controllers.PLTContractController{}, "post:PLTTransactions"),

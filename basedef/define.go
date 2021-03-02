@@ -1,0 +1,21 @@
+package basedef
+
+var (
+	MAX_DATA_LEN = 4096
+)
+
+const (
+	CONTRACT_TYPE_PLT = iota
+	CONTRACT_TYPE_NFT
+)
+
+const (
+	TRANSACTION_STATUS_FAILED = iota
+	TRANSACTION_STATUS_SUCCESS
+)
+
+const (
+	TRANSACTION_TYPE_TRANSFER = iota
+	TRANSACTION__TYPE_CONTRACTS
+)
+

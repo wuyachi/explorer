@@ -1,10 +1,10 @@
 package models
 
 import (
+	"explorer/basedef"
 	"explorer/utils"
 	"fmt"
 	"github.com/ethereum/go-ethereum/contracts/native/utils/decimal"
-	"math/big"
 )
 
 type ExplorerResp struct {
@@ -21,9 +21,15 @@ type ChainResp struct {
 	MintPrice    string
 	RewardPeriod uint64
 	GasFee       string
+	TransactionNum uint64
+	BlockTime    string
 }
 
-func MakeChainResponse(chain *Chain) *ChainResp {
+func MakeChainResponse(chain *Chain, transactionNum uint64, totalTime uint64, totalBlock uint64) *ChainResp {
+	decimal.DivisionPrecision = 2
+	times := decimal.NewFromInt(int64(totalTime))
+	blocks := decimal.NewFromInt(int64(totalBlock))
+	avgTime := times.Div(blocks)
 	chainResp := &ChainResp{
 		Id:           chain.Id,
 		Name:         chain.Name,
@@ -33,6 +39,8 @@ func MakeChainResponse(chain *Chain) *ChainResp {
 		MintPrice:    utils.AmountWithoutPrecision(chain.MintPrice),
 		RewardPeriod: chain.RewardPeriod,
 		GasFee:       utils.AmountWithoutPrecision(chain.GasFee),
+		TransactionNum: transactionNum,
+		BlockTime: avgTime.String(),
 	}
 	return chainResp
 }
@@ -241,7 +249,7 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 		To:              transactionDetail.To,
 		Value:           transactionDetail.Value,
 		Time:            transactionDetail.Time,
-		Status:          TRANSACTION_STATUS_SUCCESS,
+		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
 	}
 	if transactionDetail.ContractInfo != nil {
@@ -260,7 +268,7 @@ func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *Trans
 		To:              transactionDetail.To,
 		Value:           transactionDetail.Value,
 		Time:            transactionDetail.Time,
-		Status:          TRANSACTION_STATUS_SUCCESS,
+		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
 	}
 	return transactionDetailResp
@@ -318,14 +326,8 @@ type PLTHolderInfoResp struct {
 }
 
 func MakePLTHolderInfoResponse(pltContract *PLTHolderWithPercent) *PLTHolderInfoResp {
-	aaa := new(big.Float).Mul(new(big.Float).SetFloat64(pltContract.Percent), new(big.Float).SetInt64(10000))
-	bbb, _ := aaa.Int64()
-	percent := ""
-	if bbb != 0 {
-		ccc := decimal.NewFromInt(bbb)
-		ddd := ccc.Div(decimal.NewFromInt(100))
-		percent = fmt.Sprintf("%s%s", ddd.String(), "%")
-	}
+	aaa := decimal.NewFromFloat(pltContract.Percent * 100)
+	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
 	pltHolderInfoResp := &PLTHolderInfoResp{
 		Address: pltContract.Address,
 		Amount:  utils.AmountWithoutPrecision(pltContract.Amount),
@@ -490,15 +492,13 @@ type NFTUserResp struct {
 }
 
 func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
-	aaa := new(big.Float).Mul(new(big.Float).SetFloat64(nftUser.Percent), new(big.Float).SetInt64(10000))
-	bbb, _ := aaa.Int64()
-	ccc := decimal.NewFromInt(bbb)
-	ddd := ccc.Div(decimal.NewFromInt(100))
+	aaa := decimal.NewFromFloat(nftUser.Percent * 100)
+	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
 	nftUserResp := &NFTUserResp{
 		Contract:         nftUser.NFT,
 		Owner:       nftUser.Owner,
 		TokenNumber: nftUser.TokenNumber,
-		Percent:     fmt.Sprintf("%s%s", ddd.String(), "%"),
+		Percent:     percent,
 	}
 	return nftUserResp
 }
@@ -610,7 +610,7 @@ type ValidatorInfoReq struct {
 
 type ValidatorInfoResp struct {
 	Address        string
-	DelegateFactor uint64
+	DelegateFactor string
 	StakeAmount    string
 	Name           string
 	Uri            string
@@ -618,17 +618,15 @@ type ValidatorInfoResp struct {
 }
 
 func MakeValidatorInfoResponse(validator *ValidatorWithPercent) *ValidatorInfoResp {
-	aaa := new(big.Float).Mul(new(big.Float).SetFloat64(validator.Percent), new(big.Float).SetInt64(10000))
-	bbb, _ := aaa.Int64()
-	percent := ""
-	if bbb != 0 {
-		ccc := decimal.NewFromInt(bbb)
-		ddd := ccc.Div(decimal.NewFromInt(100))
-		percent = fmt.Sprintf("%s%s", ddd.String(), "%")
-	}
+	decimal.DivisionPrecision = 2
+	aaa := decimal.NewFromFloat(validator.Percent * 100)
+	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
+	bbb := decimal.NewFromInt(int64(validator.DelegateFactor))
+	ccc := bbb.Div(decimal.NewFromInt(100))
+	delegateFactor := fmt.Sprintf("%s%s", ccc.String(), "%")
 	validatorInfoResp := &ValidatorInfoResp{
 		Address:        validator.Address,
-		DelegateFactor: validator.DelegateFactor,
+		DelegateFactor: delegateFactor,
 		StakeAmount:    utils.AmountWithoutPrecision(validator.StakeAmount),
 		Percent:        percent,
 	}

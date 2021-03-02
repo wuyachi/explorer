@@ -3,6 +3,7 @@ package chain
 import (
 	"context"
 	"encoding/hex"
+	"explorer/basedef"
 	"explorer/conf"
 	"explorer/models"
 	"explorer/utils"
@@ -59,7 +60,7 @@ func NewChain(cfg *conf.Config) *Chain {
 	adminAccount.Amount = 600000000000000000
 	db.Create(adminAccount)
 	contractInfo := new(models.ContractInfo)
-	contractInfo.Type = models.CONTRACT_TYPE_PLT
+	contractInfo.Type = basedef.CONTRACT_TYPE_PLT
 	contractInfo.Contract = "0x0000000000000000000000000000000000000103"
 	name, err := sdk.PLTName()
 	if err != nil {
@@ -157,8 +158,8 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		transactionInfo.Cost = transaction.Cost().Uint64()
 		data := hex.EncodeToString(transaction.Data())
 		dataLen := len(data)
-		if dataLen > 4096 {
-			dataLen = 4096
+		if dataLen > basedef.MAX_DATA_LEN {
+			dataLen = basedef.MAX_DATA_LEN
 		}
 		transactionInfo.Data = data[0:dataLen]
 		transactionInfo.Gas = transaction.Gas()
@@ -171,7 +172,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		transactionInfo.Value = utils.AbandonPrecision(transaction.Value())
 		transactionInfo.BlockNumber = blockInfo.Number
 		transactionInfo.Time = blockInfo.Time
-		transactionInfo.Type = models.TRANSACTION__TYPE_CONTRACTS
+		transactionInfo.Type = basedef.TRANSACTION__TYPE_CONTRACTS
 		blockInfo.Transactions = append(blockInfo.Transactions, transactionInfo)
 		// parse all events
 		events, status, err := this.sdk.GetEventLog(transaction.Hash())
@@ -199,8 +200,8 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 			}
 			data := hex.EncodeToString(event.Data)
 			dataLen := len(data)
-			if dataLen > 4096 {
-				dataLen = 4096
+			if dataLen > basedef.MAX_DATA_LEN {
+				dataLen = basedef.MAX_DATA_LEN
 			}
 			eventInfo.Data = data[0:dataLen]
 			transactionInfo.Events = append(transactionInfo.Events, eventInfo)
@@ -301,7 +302,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						Owner:       strings.ToLower(owner.String()),
 						Uri:         "",
 						Site:        "",
-						Type:        models.CONTRACT_TYPE_NFT,
+						Type:        basedef.CONTRACT_TYPE_NFT,
 						Time:        blockInfo.Time,
 						TotalSupply: supply.Uint64(),
 						AddressNum:  0,

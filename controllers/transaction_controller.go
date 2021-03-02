@@ -29,7 +29,7 @@ func (c *TransactionController) Transactions() {
 		panic(err)
 	}
 	transactions := make([]*models.Transaction, 0)
-	db.Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("time desc").Find(&transactions)
+	db.Limit(transactionsReq.PageSize).Offset(transactionsReq.PageSize * transactionsReq.PageNo).Order("block_number desc").Find(&transactions)
 	var transactionNum int64
 	db.Model(&models.Transaction{}).Count(&transactionNum)
 	c.Data["json"] = models.MakeTransactionsResponse(transactionsReq.PageSize, transactionsReq.PageNo,

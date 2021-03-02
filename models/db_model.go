@@ -1,20 +1,5 @@
 package models
 
-const (
-	TRANSACTION_TYPE_TRANSFER = iota
-	TRANSACTION__TYPE_CONTRACTS
-)
-
-const (
-	TRANSACTION_STATUS_FAILED = iota
-	TRANSACTION_STATUS_SUCCESS
-)
-
-const (
-	CONTRACT_TYPE_PLT = iota
-	CONTRACT_TYPE_NFT
-)
-
 type Chain struct {
 	Id           uint64 `gorm:"primaryKey;type:bigint(20);not null;auto_increment"`
 	Name         string `gorm:"size:64"`
@@ -33,7 +18,7 @@ type Block struct {
 	Validators   uint64         `gorm:"type:bigint(20);not null"`
 	GasUsed      uint64         `gorm:"type:bigint(20);not null"`
 	Difficulty   uint64         `gorm:"type:bigint(20);not null"`
-	Number       uint64         `gorm:"type:bigint(20);not null"`
+	Number       uint64         `gorm:"type:bigint(20);uniqueIndex;not null"`
 	ParentHash   string         `gorm:"size:66;not null"`
 	ReceiptHash  string         `gorm:"size:66;not null"`
 	TxHash       string         `gorm:"size:66;not null"`
@@ -52,7 +37,7 @@ type Transaction struct {
 	To                 string               `gorm:"size:42;not null"`
 	Value              uint64               `gorm:"type:bigint(20);not null"`
 	Time               uint64               `gorm:"type:bigint(20);not null"`
-	BlockNumber        uint64               `gorm:"type:bigint(20);not null"`
+	BlockNumber        uint64               `gorm:"type:bigint(20);uniqueIndex;not null"`
 	Type               uint64               `gorm:"type:bigint(20);not null"`
 	Status             uint64               `gorm:"type:bigint(20);not null"`
 	BlockHash          string               `gorm:"size:66;not null"`

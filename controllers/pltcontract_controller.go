@@ -11,6 +11,18 @@ type PLTContractController struct {
 	beego.Controller
 }
 
+func (c *PLTContractController) PLT() {
+	var pltReq models.ContractInfoReq
+	var err error
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &pltReq); err != nil {
+		panic(err)
+	}
+	var pltContract models.ContractInfo
+	db.Where("contract = ?", native.PLTContractAddress).Find(&pltContract)
+	c.Data["json"] = models.MakeContractInfoResponse(&pltContract)
+	c.ServeJSON()
+}
+
 func (c *PLTContractController) PLTHolderInfo() {
 	var pltHolderInfoReq models.PLTHolderInfoReq
 	var err error

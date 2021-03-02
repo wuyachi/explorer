@@ -37,7 +37,7 @@ type Transaction struct {
 	To                 string               `gorm:"size:42;not null"`
 	Value              uint64               `gorm:"type:bigint(20);not null"`
 	Time               uint64               `gorm:"type:bigint(20);not null"`
-	BlockNumber        uint64               `gorm:"type:bigint(20);uniqueIndex;not null"`
+	BlockNumber        uint64               `gorm:"type:bigint(20);index;not null"`
 	Type               uint64               `gorm:"type:bigint(20);not null"`
 	Status             uint64               `gorm:"type:bigint(20);not null"`
 	BlockHash          string               `gorm:"size:66;not null"`

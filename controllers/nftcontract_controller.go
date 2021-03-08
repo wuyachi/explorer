@@ -44,9 +44,9 @@ func (c *NFTContractController) NFTTokenInfo() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &nftTokenInfoReq); err != nil {
 		panic(err)
 	}
-	nftContract := new(models.NFTHolder)
-	db.Where("nft = ? and token = ?", nftTokenInfoReq.Contract, nftTokenInfoReq.Token).First(nftContract)
-	c.Data["json"] = models.MakeNFTHolderResponse(nftContract)
+	nftContract := new(models.NFTHolderWithUri)
+	db.Where("nft = ? and token = ?", nftTokenInfoReq.Contract, nftTokenInfoReq.Token).Preload("ContractInfo").First(nftContract)
+	c.Data["json"] = models.MakeNFTHolderWithUriResponse(nftContract)
 	c.ServeJSON()
 }
 
@@ -71,8 +71,8 @@ func (c *NFTContractController) NFTHoldersOfUser() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &nftHoldersOfUserReq); err != nil {
 		panic(err)
 	}
-	nftContracts := make([]*models.NFTHolder, 0)
-	db.Where("nft = ? and owner = ?", nftHoldersOfUserReq.Contract, nftHoldersOfUserReq.Address).Limit(nftHoldersOfUserReq.PageSize).Offset(nftHoldersOfUserReq.PageSize * nftHoldersOfUserReq.PageNo).Find(&nftContracts)
+	nftContracts := make([]*models.NFTHolderWithUri, 0)
+	db.Where("nft = ? and owner = ?", nftHoldersOfUserReq.Contract, nftHoldersOfUserReq.Address).Preload("ContractInfo").Limit(nftHoldersOfUserReq.PageSize).Offset(nftHoldersOfUserReq.PageSize * nftHoldersOfUserReq.PageNo).Find(&nftContracts)
 	var nftContractNum int64
 	db.Model(&models.NFTHolder{}).Where("nft = ? and owner = ?", nftHoldersOfUserReq.Contract, nftHoldersOfUserReq.Address).Count(&nftContractNum)
 	c.Data["json"] = models.MakeNFTHoldersResponse(nftHoldersOfUserReq.PageSize, nftHoldersOfUserReq.PageNo,
@@ -86,8 +86,8 @@ func (c *NFTContractController) NFTHolders() {
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &nftHoldersReq); err != nil {
 		panic(err)
 	}
-	nftContracts := make([]*models.NFTHolder, 0)
-	db.Where("nft = ?", nftHoldersReq.Contract).Limit(nftHoldersReq.PageSize).Offset(nftHoldersReq.PageSize * nftHoldersReq.PageNo).Find(&nftContracts)
+	nftContracts := make([]*models.NFTHolderWithUri, 0)
+	db.Where("nft = ?", nftHoldersReq.Contract).Preload("ContractInfo").Limit(nftHoldersReq.PageSize).Offset(nftHoldersReq.PageSize * nftHoldersReq.PageNo).Find(&nftContracts)
 	var nftTokenNum int64
 	db.Model(&models.NFTHolder{}).Where("nft = ?", nftHoldersReq.Contract).Count(&nftTokenNum)
 	c.Data["json"] = models.MakeNFTHoldersResponse(nftHoldersReq.PageSize, nftHoldersReq.PageNo,

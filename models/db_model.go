@@ -108,6 +108,14 @@ type NFTHolder struct {
 	Uri   string `gorm:"size:66;not null"`
 }
 
+type NFTHolderWithUri struct {
+	NFT   string `gorm:"primaryKey;size:42;not null"`
+	Token string `gorm:"primaryKey;size:42;not null"`
+	Owner string `gorm:"size:42;not null"`
+	Uri   string `gorm:"size:66;not null"`
+	ContractInfo *ContractInfo `gorm:"foreignKey:NFT;references:Contract"`
+}
+
 type NFTUser struct {
 	NFT         string  `gorm:"primaryKey;size:42;not null"`
 	Owner       string  `gorm:"size:42;not null"`
@@ -127,6 +135,7 @@ type ContractInfo struct {
 	Owner       string `gorm:"size:42;not null"`
 	Uri         string `gorm:"size:66;not null"`
 	Site        string `gorm:"size:66;not null"`
+	BaseUri         string `gorm:"size:66;not null"`
 	Time        uint64 `gorm:"type:bigint(20);not null"`
 	TotalSupply uint64 `gorm:"type:bigint(20);not null"`
 	AddressNum  uint64 `gorm:"type:bigint(20);not null"`

@@ -273,9 +273,17 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						nftContractMap[nft+token] = tokenInfo
 					}
 					tokenInfo.Owner = to
-					tokenInfo.Uri, err = this.sdk.NFTTokenUri(event.Contract, tokenId)
-					if err != nil {
-						return err
+					if from == strings.ToLower(client.EMPTY_ADDRESS.String()) {
+						uri, err := this.sdk.NFTTokenUri(event.Contract, tokenId)
+						if err != nil {
+							return err
+						}
+						index := strings.LastIndex(uri, "/")
+						if index == -1 {
+							tokenInfo.Uri = uri
+						} else {
+							tokenInfo.Uri = uri[index+1:]
+						}
 					}
 				} else if event.EventId.String() == client.NFTEventID_Deploy {
 					nft := strings.ToLower(event.Contract.String())
@@ -484,6 +492,13 @@ func (this *Chain) doStatistic() {
 			continue
 		}
 		item.AddressNum = contract.AddressNum
+	}
+	for _, item := range contracts {
+		baseUri, err := this.sdk.NFTBaseUri(common.StringToAddress(item.Contract))
+		if err != nil {
+			return
+		}
+		item.BaseUri = baseUri
 	}
 	this.db.Save(contracts)
 	//

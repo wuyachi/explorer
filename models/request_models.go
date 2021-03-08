@@ -257,6 +257,9 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 	}
 	if transactionDetail.NFTHolder != nil {
 		transactionDetailResp.TokenInfo = MakeNFTHolderResponse(transactionDetail.NFTHolder)
+		if transactionDetail.ContractInfo != nil {
+			transactionDetailResp.TokenInfo.Uri = transactionDetail.ContractInfo.BaseUri + transactionDetailResp.TokenInfo.Uri
+		}
 	}
 	return transactionDetailResp
 }
@@ -445,6 +448,19 @@ func MakeNFTHolderResponse(nftContract *NFTHolder) *NFTHolderResp {
 	return nftTokenInfoResp
 }
 
+func MakeNFTHolderWithUriResponse(nftContract *NFTHolderWithUri) *NFTHolderResp {
+	nftTokenInfoResp := &NFTHolderResp{
+		Contract:   nftContract.NFT,
+		Token: nftContract.Token,
+		Owner: nftContract.Owner,
+		Uri:   nftContract.Uri,
+	}
+	if nftContract.ContractInfo != nil {
+		nftTokenInfoResp.Uri = nftContract.ContractInfo.BaseUri + nftContract.Uri
+	}
+	return nftTokenInfoResp
+}
+
 type NFTHoldersReq struct {
 	Contract      string
 	PageSize int
@@ -466,7 +482,7 @@ type NFTHoldersResp struct {
 	NFTTokenInfos []*NFTHolderResp
 }
 
-func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTHolder) *NFTHoldersResp {
+func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount int, nftContracts []*NFTHolderWithUri) *NFTHoldersResp {
 	nftHoldersResp := &NFTHoldersResp{
 		PageSize:   pageSize,
 		PageNo:     pageNo,
@@ -474,7 +490,7 @@ func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount 
 		TotalCount: totalCount,
 	}
 	for _, nftContract := range nftContracts {
-		nftHoldersResp.NFTTokenInfos = append(nftHoldersResp.NFTTokenInfos, MakeNFTHolderResponse(nftContract))
+		nftHoldersResp.NFTTokenInfos = append(nftHoldersResp.NFTTokenInfos, MakeNFTHolderWithUriResponse(nftContract))
 	}
 	return nftHoldersResp
 }

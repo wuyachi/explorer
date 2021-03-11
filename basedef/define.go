@@ -19,3 +19,8 @@ const (
 	TRANSACTION__TYPE_CONTRACTS
 )
 
+const (
+	STATISTIC_DO = 1
+	STATISTIC_NOT = 2
+)
+

@@ -10,6 +10,7 @@ import (
 type Config struct {
 	NodeConfig *NodeConfig
 	DBConfig   *DBConfig
+	Statistic int
 }
 
 type NodeConfig struct {

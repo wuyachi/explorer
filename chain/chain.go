@@ -26,10 +26,20 @@ type Chain struct {
 	sdk   *palette_go_sdk.PaletteSdk
 	db    *gorm.DB
 	chain *models.Chain
+
+	pltContractCache map[string]*models.PLTHolder
+	nftContractCache map[string]*models.NFTHolder
+	proposeCache map[string]*models.Propose
+	stakeCache map[string]*models.Stake
 }
 
 func NewChain(cfg *conf.Config) *Chain {
-	chain := &Chain{}
+	chain := &Chain{
+		pltContractCache: make(map[string]*models.PLTHolder, 0),
+		nftContractCache: make(map[string]*models.NFTHolder, 0),
+		proposeCache : make(map[string]*models.Propose, 0),
+		stakeCache : make(map[string]*models.Stake, 0),
+	}
 	chain.cfg = cfg
 	sdk := palette_go_sdk.NewPaletteSdk(cfg.NodeConfig.RestURL)
 	accounts := sdk.ListAccounts()
@@ -77,7 +87,7 @@ func NewChain(cfg *conf.Config) *Chain {
 	contractInfo.Name = name
 	contractInfo.Symbol = symbol
 	contractInfo.TotalSupply = supply.Uint64()
-	db.Debug().Create(contractInfo)
+	db.Create(contractInfo)
 	return chain
 }
 
@@ -223,18 +233,14 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					var fromUser *models.PLTHolder
 					fromUser, ok := pltContractMap[from]
 					if !ok {
-						fromUser = new(models.PLTHolder)
-						this.db.Where("address = ?", from).First(fromUser)
-						fromUser.Address = from
+						fromUser = this.getPLTHolder(from)
 						pltContractMap[from] = fromUser
 					}
 
 					var toUser *models.PLTHolder
 					toUser, ok = pltContractMap[to]
 					if !ok {
-						toUser = new(models.PLTHolder)
-						this.db.Where("address = ?", to).First(toUser)
-						toUser.Address = to
+						toUser = this.getPLTHolder(from)
 						pltContractMap[to] = toUser
 					}
 
@@ -266,10 +272,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					var tokenInfo *models.NFTHolder
 					tokenInfo, ok := nftContractMap[nft+token]
 					if !ok {
-						tokenInfo = new(models.NFTHolder)
-						this.db.Where("nft = ? and token = ?", nft, token).First(tokenInfo)
-						tokenInfo.NFT = nft
-						tokenInfo.Token = token
+						tokenInfo = this.getNFTHolder(nft, token)
 						nftContractMap[nft+token] = tokenInfo
 					}
 					tokenInfo.Owner = to
@@ -343,9 +346,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					var proposeInfo *models.Propose
 					proposeInfo, ok := proposeMap[proposeId]
 					if !ok {
-						proposeInfo = new(models.Propose)
-						this.db.Where("propose_id = ?", proposeId).First(proposeInfo)
-						proposeInfo.ProposeId = proposeId
+						proposeInfo = this.getPropose(proposeId)
 						proposeMap[proposeId] = proposeInfo
 					}
 					propose, _ := this.sdk.GovernanceGetProposal(common.BytesToAddress(event.Topic[1].Bytes()))
@@ -364,10 +365,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					var stakeInfo *models.Stake
 					stakeInfo, ok := stakeMap[owner+validator]
 					if !ok {
-						stakeInfo = new(models.Stake)
-						this.db.Where("owner = ? and validator = ?", owner, validator).First(stakeInfo)
-						stakeInfo.Owner = owner
-						stakeInfo.Validator = validator
+						stakeInfo = this.getStake(owner, validator)
 						stakeMap[owner+validator] = stakeInfo
 					}
 
@@ -476,8 +474,60 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		this.db.Save(validatorInfos)
 	}
 	this.db.Save(this.chain)
-	this.doStatistic()
+	if this.cfg.Statistic == basedef.STATISTIC_DO {
+		this.doStatistic()
+	}
 	return nil
+}
+
+func (this *Chain) getPLTHolder(user string) *models.PLTHolder {
+	userHolder, ok := this.pltContractCache[user]
+	if ok {
+		return userHolder
+	}
+	userHolder = new(models.PLTHolder)
+	this.db.Where("address = ?", user).First(userHolder)
+	userHolder.Address = user
+	this.pltContractCache[user] = userHolder
+	return userHolder
+}
+
+func (this *Chain) getNFTHolder(nft string, token string) *models.NFTHolder {
+	userHolder, ok := this.nftContractCache[nft+token]
+	if ok {
+		return userHolder
+	}
+	userHolder = new(models.NFTHolder)
+	this.db.Where("nft = ? and token = ?", nft, token).First(userHolder)
+	userHolder.NFT = nft
+	userHolder.Token = token
+	this.nftContractCache[nft+token] = userHolder
+	return userHolder
+}
+
+func (this *Chain) getPropose(proposeId string) *models.Propose {
+	proposeInfo, ok := this.proposeCache[proposeId]
+	if ok {
+		return proposeInfo
+	}
+	proposeInfo = new(models.Propose)
+	this.db.Where("propose_id = ?", proposeId).First(proposeInfo)
+	proposeInfo.ProposeId = proposeId
+	this.proposeCache[proposeId] = proposeInfo
+	return proposeInfo
+}
+
+func (this *Chain) getStake(owner string, validator string) *models.Stake {
+	stakeInfo, ok := this.stakeCache[owner+validator]
+	if ok {
+		return stakeInfo
+	}
+	stakeInfo = new(models.Stake)
+	this.db.Where("owner = ? and validator = ?", owner, validator).First(stakeInfo)
+	stakeInfo.Owner = owner
+	stakeInfo.Validator = validator
+	this.stakeCache[owner+validator] = stakeInfo
+	return stakeInfo
 }
 
 func (this *Chain) doStatistic() {

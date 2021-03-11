@@ -240,7 +240,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					var toUser *models.PLTHolder
 					toUser, ok = pltContractMap[to]
 					if !ok {
-						toUser = this.getPLTHolder(from)
+						toUser = this.getPLTHolder(to)
 						pltContractMap[to] = toUser
 					}
 

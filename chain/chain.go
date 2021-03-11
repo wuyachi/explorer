@@ -434,6 +434,22 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 	this.chain.Height = height
 	// update db
 	this.db.Create(blockInfo)
+	if len(contractInfos) > 0 {
+		this.db.Save(contractInfos)
+	}
+	if len(pltContractInfos) > 0 {
+		this.db.Save(pltContractInfos)
+	}
+	if len(nftContractInfos) > 0 {
+		this.db.Save(nftContractInfos)
+	}
+	if len(stakeInfos) > 0 {
+		this.db.Save(stakeInfos)
+	}
+	if len(proposeInfos) > 0 {
+		this.db.Save(proposeInfos)
+	}
+	/*
 	for _, contract := range contractInfos {
 		this.db.Save(contract)
 	}
@@ -449,7 +465,13 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 	for _, propose := range proposeInfos {
 		this.db.Save(propose)
 	}
+	 */
 	this.db.Where("1 = 1").Delete(&models.Validator{})
+	/*
+	if len(validatorInfos) > 0 {
+		this.db.Save(validatorInfos)
+	}
+	*/
 	if len(validatorInfos) > 0 {
 		this.db.Save(validatorInfos)
 	}

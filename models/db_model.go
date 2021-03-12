@@ -116,6 +116,10 @@ type NFTHolderWithUri struct {
 	ContractInfo *ContractInfo `gorm:"foreignKey:NFT;references:Contract"`
 }
 
+func (NFTHolderWithUri) TableName() string {
+	return "nft_holders"
+}
+
 type NFTUser struct {
 	NFT         string  `gorm:"primaryKey;size:42;not null"`
 	Owner       string  `gorm:"size:42;not null"`

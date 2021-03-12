@@ -5,7 +5,7 @@
     "WalletFile": "./wallet/wallet.dat",
     "WalletPwd": "4cUYqGj2yib718E7ZmGQc"
   },
-  "Statistic": 1,
+  "Statistic": 0,
   "DBConfig": {
     "URL": "localhost:3306",
     "User": "root",

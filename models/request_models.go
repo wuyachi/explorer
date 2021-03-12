@@ -329,13 +329,10 @@ type PLTHolderInfoResp struct {
 }
 
 func MakePLTHolderInfoResponse(pltContract *PLTHolderWithPercent) *PLTHolderInfoResp {
-	decimal.DivisionPrecision = 2
-	aaa := decimal.NewFromFloat(pltContract.Percent * 100)
-	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
 	pltHolderInfoResp := &PLTHolderInfoResp{
 		Address: pltContract.Address,
 		Amount:  utils.AmountWithoutPrecision(pltContract.Amount),
-		Percent: percent,
+		Percent: basedef.FromatPercent(pltContract.Percent),
 	}
 	return pltHolderInfoResp
 }
@@ -509,14 +506,11 @@ type NFTUserResp struct {
 }
 
 func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
-	decimal.DivisionPrecision = 2
-	aaa := decimal.NewFromFloat(nftUser.Percent * 100)
-	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
 	nftUserResp := &NFTUserResp{
 		Contract:         nftUser.NFT,
 		Owner:       nftUser.Owner,
 		TokenNumber: nftUser.TokenNumber,
-		Percent:     percent,
+		Percent:     basedef.FromatPercent(nftUser.Percent),
 	}
 	return nftUserResp
 }
@@ -636,9 +630,6 @@ type ValidatorInfoResp struct {
 }
 
 func MakeValidatorInfoResponse(validator *ValidatorWithPercent) *ValidatorInfoResp {
-	decimal.DivisionPrecision = 2
-	aaa := decimal.NewFromFloat(validator.Percent * 100)
-	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
 	bbb := decimal.NewFromInt(int64(validator.DelegateFactor))
 	ccc := bbb.Div(decimal.NewFromInt(100))
 	delegateFactor := fmt.Sprintf("%s%s", ccc.String(), "%")
@@ -646,7 +637,7 @@ func MakeValidatorInfoResponse(validator *ValidatorWithPercent) *ValidatorInfoRe
 		Address:        validator.Address,
 		DelegateFactor: delegateFactor,
 		StakeAmount:    utils.AmountWithoutPrecision(validator.StakeAmount),
-		Percent:        percent,
+		Percent:        basedef.FromatPercent(validator.Percent),
 	}
 	return validatorInfoResp
 }

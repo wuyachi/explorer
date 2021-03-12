@@ -530,6 +530,20 @@ func (this *Chain) getStake(owner string, validator string) *models.Stake {
 	return stakeInfo
 }
 
+func (this *Chain) getPLTAddress() string {
+	return native.PLTContractAddress
+}
+
+func (this *Chain) isPLTAddress(addr string) bool {
+	thisAddr := common.StringToAddress(addr)
+	expectAddr := common.StringToAddress(native.PLTContractAddress)
+	if thisAddr == expectAddr {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (this *Chain) doStatistic() {
 	contracts1 := make([]*models.ContractInfo, 0)
 	this.db.Table("transaction_details").Select("contract, count(*) as transfer_num").Group("Contract").Find(&contracts1)
@@ -566,6 +580,9 @@ func (this *Chain) doStatistic() {
 		item.AddressNum = contract.AddressNum
 	}
 	for _, item := range contracts {
+		if this.isPLTAddress(item.Contract) {
+			continue
+		}
 		baseUri, err := this.sdk.NFTBaseUri(common.StringToAddress(item.Contract))
 		if err != nil {
 			return

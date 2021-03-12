@@ -329,6 +329,7 @@ type PLTHolderInfoResp struct {
 }
 
 func MakePLTHolderInfoResponse(pltContract *PLTHolderWithPercent) *PLTHolderInfoResp {
+	decimal.DivisionPrecision = 2
 	aaa := decimal.NewFromFloat(pltContract.Percent * 100)
 	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
 	pltHolderInfoResp := &PLTHolderInfoResp{
@@ -508,6 +509,7 @@ type NFTUserResp struct {
 }
 
 func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
+	decimal.DivisionPrecision = 2
 	aaa := decimal.NewFromFloat(nftUser.Percent * 100)
 	percent := fmt.Sprintf("%s%s", aaa.String(), "%")
 	nftUserResp := &NFTUserResp{

@@ -216,7 +216,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 			eventInfo.Data = data[0:dataLen]
 			transactionInfo.Events = append(transactionInfo.Events, eventInfo)
 			//
-			if event.Contract == common.HexToAddress(native.PLTContractAddress) {
+			if this.isPLTAddress(event.Contract.String()) {
 				if event.EventId.String() == client.PLTEventID_Transfer {
 					from := strings.ToLower(common.BytesToAddress(event.Topic[0].Bytes()).String())
 					to := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
@@ -252,8 +252,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 				}
 				continue
 			}
-			addr := new(big.Int).SetBytes(event.Contract.Bytes())
-			if addr.Cmp(native.NFTContractAddressStart) >= 0 && addr.Cmp(native.NativeContractAddressEnd) < 0 {
+			if this.isNFTAddress(event.Contract.String()) {
 				if event.EventId.String() == client.NFTEventID_Transfer {
 					from := strings.ToLower(common.BytesToAddress(event.Topic[0].Bytes()).String())
 					nft := strings.ToLower(event.Contract.String())
@@ -322,7 +321,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 				}
 				continue
 			}
-			if event.Contract == common.HexToAddress(native.GovernanceContractAddress) {
+			if this.isGovernanceAddress(event.Contract.String()) {
 				if event.EventId.String() == client.GovernanceEventID_Propose {
 					proposer := strings.ToLower(common.BytesToAddress(event.Topic[0].Bytes()).String())
 					proposeId := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
@@ -535,9 +534,29 @@ func (this *Chain) getPLTAddress() string {
 }
 
 func (this *Chain) isPLTAddress(addr string) bool {
-	thisAddr := common.StringToAddress(addr)
-	expectAddr := common.StringToAddress(native.PLTContractAddress)
+	thisAddr := common.HexToAddress(addr)
+	expectAddr := common.HexToAddress(native.PLTContractAddress)
 	if thisAddr == expectAddr {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (this *Chain) isGovernanceAddress(addr string) bool {
+	thisAddr := common.HexToAddress(addr)
+	expectAddr := common.HexToAddress(native.GovernanceContractAddress)
+	if thisAddr == expectAddr {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (this *Chain) isNFTAddress(addr string) bool {
+	thisAddr := common.HexToAddress(addr)
+	addrSize := new(big.Int).SetBytes(thisAddr.Bytes())
+	if addrSize.Cmp(native.NFTContractAddressStart) >= 0 && addrSize.Cmp(native.NativeContractAddressEnd) < 0 {
 		return true
 	} else {
 		return false
@@ -583,7 +602,7 @@ func (this *Chain) doStatistic() {
 		if this.isPLTAddress(item.Contract) {
 			continue
 		}
-		baseUri, err := this.sdk.NFTBaseUri(common.StringToAddress(item.Contract))
+		baseUri, err := this.sdk.NFTBaseUri(common.HexToAddress(item.Contract))
 		if err != nil {
 			return
 		}

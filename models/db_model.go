@@ -125,6 +125,7 @@ type NFTUser struct {
 	Owner       string  `gorm:"size:42;not null"`
 	TokenNumber uint64  `gorm:"type:bigint(20);not null"`
 	Percent     float64 `gorm:"not null"`
+	ContractInfo *ContractInfo `gorm:"foreignKey:NFT;references:Contract"`
 }
 
 func (NFTUser) TableName() string {

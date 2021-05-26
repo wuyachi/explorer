@@ -80,6 +80,27 @@ func (c *NFTContractController) NFTHoldersOfUser() {
 	c.ServeJSON()
 }
 
+func (c *NFTContractController) AllNFTsHoldersOfUser() {
+	var nftUsersReq models.NFTUsersReq
+	var err error
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &nftUsersReq); err != nil {
+		panic(err)
+	}
+	nftContracts := make([]*models.NFTUser, 0)
+	db.Model(&models.NFTUser{}).
+		Select("nft, owner, count(*) as token_number").Where("owner = ?", nftUsersReq.Owner).Group("nft").
+		Preload("ContractInfo").
+		Order("count(*) desc").
+		Limit(nftUsersReq.PageSize).Offset(nftUsersReq.PageSize * nftUsersReq.PageNo).Find(&nftContracts)
+
+	var nftTokenNum int64
+	db.Model(&models.NFTUser{}).
+		Select("nft, owner, count(*) as token_number").Where("owner = ?", nftUsersReq.Owner).Group("nft").Count(&nftTokenNum)
+	c.Data["json"] = models.MakeNFTUsersResponse(nftUsersReq.PageSize, nftUsersReq.PageNo,
+		(int(nftTokenNum)+nftUsersReq.PageSize-1)/nftUsersReq.PageSize, int(nftTokenNum), nftContracts)
+	c.ServeJSON()
+}
+
 func (c *NFTContractController) NFTHolders() {
 	var nftHoldersReq models.NFTHoldersReq
 	var err error
@@ -123,6 +144,39 @@ func (c *NFTContractController) NFTTransactions() {
 	db.Where("contract = ?", transactionDetailsReq.Contract).Preload("NFTHolder").Limit(transactionDetailsReq.PageSize).Offset(transactionDetailsReq.PageSize * transactionDetailsReq.PageNo).Order("time desc").Find(&transactionDetails)
 	var transactionDetailsNum int64
 	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", transactionDetailsReq.Contract).Count(&transactionDetailsNum)
+	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionDetailsReq.PageSize, transactionDetailsReq.PageNo,
+		(int(transactionDetailsNum)+transactionDetailsReq.PageSize-1)/transactionDetailsReq.PageSize, int(transactionDetailsNum), transactionDetails)
+	c.ServeJSON()
+}
+
+func (c *NFTContractController) NFTTransactionsOfUser() {
+	var transactionDetailsReq models.TransactionDetailsOfUserReq
+	var err error
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionDetailsReq); err != nil {
+		panic(err)
+	}
+	transactionDetails := make([]*models.TransactionDetailWithInfo, 0)
+	db.Where("contract = ?", transactionDetailsReq.Contract).
+		Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).
+		Preload("NFTHolder").Limit(transactionDetailsReq.PageSize).Offset(transactionDetailsReq.PageSize * transactionDetailsReq.PageNo).Order("time desc").Find(&transactionDetails)
+	var transactionDetailsNum int64
+	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", transactionDetailsReq.Contract).Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)
+	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionDetailsReq.PageSize, transactionDetailsReq.PageNo,
+		(int(transactionDetailsNum)+transactionDetailsReq.PageSize-1)/transactionDetailsReq.PageSize, int(transactionDetailsNum), transactionDetails)
+	c.ServeJSON()
+}
+
+func (c *NFTContractController) AllNFTsTransactionsOfUser() {
+	var transactionDetailsReq models.TransactionDetailsOfUserReq
+	var err error
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionDetailsReq); err != nil {
+		panic(err)
+	}
+	transactionDetails := make([]*models.TransactionDetailWithInfo, 0)
+	db.Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).
+		Preload("NFTHolder").Limit(transactionDetailsReq.PageSize).Offset(transactionDetailsReq.PageSize * transactionDetailsReq.PageNo).Order("time desc").Find(&transactionDetails)
+	var transactionDetailsNum int64
+	db.Model(&models.TransactionDetailWithInfo{}).Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)
 	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionDetailsReq.PageSize, transactionDetailsReq.PageNo,
 		(int(transactionDetailsNum)+transactionDetailsReq.PageSize-1)/transactionDetailsReq.PageSize, int(transactionDetailsNum), transactionDetails)
 	c.ServeJSON()

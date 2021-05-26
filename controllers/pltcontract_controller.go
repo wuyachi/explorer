@@ -65,3 +65,20 @@ func (c *PLTContractController) PLTTransactions() {
 		(int(transactionDetailsNum)+transactionDetailsReq.PageSize-1)/transactionDetailsReq.PageSize, int(transactionDetailsNum), transactionDetails)
 	c.ServeJSON()
 }
+
+func (c *PLTContractController) PLTTransactionsOfUser() {
+	var transactionDetailsOfUserReq models.TransactionDetailsOfUserReq
+	var err error
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionDetailsOfUserReq); err != nil {
+		panic(err)
+	}
+	transactionDetails := make([]*models.TransactionDetailWithInfo, 0)
+	db.Where("contract = ?", native.PLTContractAddress).
+		Where("from = ? or to = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).
+		Limit(transactionDetailsOfUserReq.PageSize).Offset(transactionDetailsOfUserReq.PageSize * transactionDetailsOfUserReq.PageNo).Order("time desc").Find(&transactionDetails)
+	var transactionDetailsNum int64
+	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", native.PLTContractAddress).Where("from = ? or to = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).Count(&transactionDetailsNum)
+	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionDetailsOfUserReq.PageSize, transactionDetailsOfUserReq.PageNo,
+		(int(transactionDetailsNum)+transactionDetailsOfUserReq.PageSize-1)/transactionDetailsOfUserReq.PageSize, int(transactionDetailsNum), transactionDetails)
+	c.ServeJSON()
+}

@@ -502,7 +502,8 @@ type NFTUserResp struct {
 	Contract         string
 	Owner       string
 	TokenNumber uint64
-	Percent     string
+	ContractInfo    *ContractInfoResp `json:",omitempty"`
+	Percent     string `json:",omitempty"`
 }
 
 func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
@@ -512,11 +513,15 @@ func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
 		TokenNumber: nftUser.TokenNumber,
 		Percent:     basedef.FromatPercent(nftUser.Percent),
 	}
+	if nftUser.ContractInfo != nil {
+		nftUserResp.ContractInfo = MakeContractInfoResponse(nftUser.ContractInfo)
+	}
 	return nftUserResp
 }
 
 type NFTUsersReq struct {
 	Contract      string
+	Owner       string
 	PageSize int
 	PageNo   int
 }
@@ -744,4 +749,12 @@ func MakeProposesOfUserResponse(pageSize int, pageNo int, totalPage int, totalCo
 		proposesOfUserResp.ProposeInfos = append(proposesOfUserResp.ProposeInfos, MakeProposeInfoResponse(propose))
 	}
 	return proposesOfUserResp
+}
+
+
+type TransactionDetailsOfUserReq struct {
+	Contract      string
+	User string
+	PageSize int
+	PageNo   int
 }

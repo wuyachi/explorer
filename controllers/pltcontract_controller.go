@@ -74,7 +74,7 @@ func (c *PLTContractController) PLTTransactionsOfUser() {
 	}
 	transactionDetails := make([]*models.TransactionDetailWithInfo, 0)
 	db.Where("contract = ?", native.PLTContractAddress).
-		Where("from = ? or to = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).
+		Where("`from` = ? or `to` = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).
 		Limit(transactionDetailsOfUserReq.PageSize).Offset(transactionDetailsOfUserReq.PageSize * transactionDetailsOfUserReq.PageNo).Order("time desc").Find(&transactionDetails)
 	var transactionDetailsNum int64
 	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", native.PLTContractAddress).Where("`from` = ? or `to` = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).Count(&transactionDetailsNum)

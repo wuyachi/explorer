@@ -157,7 +157,7 @@ func (c *NFTContractController) NFTTransactionsOfUser() {
 	}
 	transactionDetails := make([]*models.TransactionDetailWithInfo, 0)
 	db.Where("contract = ?", transactionDetailsReq.Contract).
-		Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).
+		Where("`from` = ? or `to` = ?", transactionDetailsReq.User, transactionDetailsReq.User).
 		Preload("NFTHolder").Limit(transactionDetailsReq.PageSize).Offset(transactionDetailsReq.PageSize * transactionDetailsReq.PageNo).Order("time desc").Find(&transactionDetails)
 	var transactionDetailsNum int64
 	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", transactionDetailsReq.Contract).Where("`from` = ? or `to` = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)
@@ -173,7 +173,7 @@ func (c *NFTContractController) AllNFTsTransactionsOfUser() {
 		panic(err)
 	}
 	transactionDetails := make([]*models.TransactionDetailWithInfo, 0)
-	db.Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).
+	db.Where("`from` = ? or `to` = ?", transactionDetailsReq.User, transactionDetailsReq.User).
 		Preload("NFTHolder").Limit(transactionDetailsReq.PageSize).Offset(transactionDetailsReq.PageSize * transactionDetailsReq.PageNo).Order("time desc").Find(&transactionDetails)
 	var transactionDetailsNum int64
 	db.Model(&models.TransactionDetailWithInfo{}).Where("`from` = ? or `to` = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)

@@ -160,7 +160,7 @@ func (c *NFTContractController) NFTTransactionsOfUser() {
 		Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).
 		Preload("NFTHolder").Limit(transactionDetailsReq.PageSize).Offset(transactionDetailsReq.PageSize * transactionDetailsReq.PageNo).Order("time desc").Find(&transactionDetails)
 	var transactionDetailsNum int64
-	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", transactionDetailsReq.Contract).Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)
+	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", transactionDetailsReq.Contract).Where("`from` = ? or `to` = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)
 	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionDetailsReq.PageSize, transactionDetailsReq.PageNo,
 		(int(transactionDetailsNum)+transactionDetailsReq.PageSize-1)/transactionDetailsReq.PageSize, int(transactionDetailsNum), transactionDetails)
 	c.ServeJSON()
@@ -176,7 +176,7 @@ func (c *NFTContractController) AllNFTsTransactionsOfUser() {
 	db.Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).
 		Preload("NFTHolder").Limit(transactionDetailsReq.PageSize).Offset(transactionDetailsReq.PageSize * transactionDetailsReq.PageNo).Order("time desc").Find(&transactionDetails)
 	var transactionDetailsNum int64
-	db.Model(&models.TransactionDetailWithInfo{}).Where("from = ? or to = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)
+	db.Model(&models.TransactionDetailWithInfo{}).Where("`from` = ? or `to` = ?", transactionDetailsReq.User, transactionDetailsReq.User).Count(&transactionDetailsNum)
 	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionDetailsReq.PageSize, transactionDetailsReq.PageNo,
 		(int(transactionDetailsNum)+transactionDetailsReq.PageSize-1)/transactionDetailsReq.PageSize, int(transactionDetailsNum), transactionDetails)
 	c.ServeJSON()

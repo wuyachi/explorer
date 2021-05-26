@@ -77,7 +77,7 @@ func (c *PLTContractController) PLTTransactionsOfUser() {
 		Where("from = ? or to = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).
 		Limit(transactionDetailsOfUserReq.PageSize).Offset(transactionDetailsOfUserReq.PageSize * transactionDetailsOfUserReq.PageNo).Order("time desc").Find(&transactionDetails)
 	var transactionDetailsNum int64
-	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", native.PLTContractAddress).Where("from = ? or to = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).Count(&transactionDetailsNum)
+	db.Model(&models.TransactionDetailWithInfo{}).Where("contract = ?", native.PLTContractAddress).Where("`from` = ? or `to` = ?", transactionDetailsOfUserReq.User, transactionDetailsOfUserReq.User).Count(&transactionDetailsNum)
 	c.Data["json"] = models.MakeTransactionDetailsResponse(transactionDetailsOfUserReq.PageSize, transactionDetailsOfUserReq.PageNo,
 		(int(transactionDetailsNum)+transactionDetailsOfUserReq.PageSize-1)/transactionDetailsOfUserReq.PageSize, int(transactionDetailsNum), transactionDetails)
 	c.ServeJSON()

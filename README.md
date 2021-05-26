@@ -21,15 +21,19 @@ http://106.75.251.68:22002/
 * [POST transactiondetails](#post-transactiondetails)
 * [POST pltholders](#post-pltholders)
 * [POST plttransactions](#post-plttransactions)
+* [POST plttransactionsofuser](#post-plttransactionsofuser)
 * [POST pltholderinfo](#post-pltholderinfo)
 * [POST nfts](#post-nfts)
 * [POST nft](#post-nft)
 * [POST nfttokeninfo](#post-nfttokeninfo)
 * [POST nfttokentransactions](#post-nfttokentransactions)
 * [POST nftholdersofuser](#post-nftholdersofuser)
+* [POST allnftsholdersofuser](#post-allnftsholdersofuser)
 * [POST nftholders](#post-nftholders)
 * [POST nftusers](#post-nftusers)
 * [POST nfttransactions](#post-nfttransactions)
+* [POST nfttransactionsofuser](#post-nfttransactionsofuser)
+* [POST allnftstransactionsofuser](#post-allnftstransactionsofuser)
 * [POST stakesofowner](#post-stakesofowner)
 * [POST stakesofvalidator](#post-stakesofvalidator)
 * [POST stakeinfo](#post-stakeinfo)
@@ -1027,6 +1031,89 @@ Example Response
 }
 ```
 
+### POST plttransactionsofuser
+
+Request 
+```
+http://localhost:8080/v1/plttransactionsofuser
+```
+
+BODY raw
+```
+{
+    "User":"0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+    "PageNo":0,
+    "PageSize":5
+}
+```
+
+Example Request
+```
+curl --location --request POST 'http://localhost:8080/v1/plttransactionsofuser' \
+--data-raw '{
+    "User":"0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+    "PageNo":0,
+    "PageSize":5
+}'
+```
+
+Example Response
+```
+{
+    "PageSize": 5,
+    "PageNo": 0,
+    "TotalPage": 45142,
+    "TotalCount": 225707,
+    "TransactionDetails": [
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x0000000000000000000000000000000000000105",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "12000000000",
+            "Time": 1622002199,
+            "Status": 1,
+            "TransactionHash": "0x069c1d6e4e8bef5d497def33d70cdc77d6c2898eff71069cb35193d78819f784"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x0000000000000000000000000000000000000105",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "12000000000",
+            "Time": 1622002174,
+            "Status": 1,
+            "TransactionHash": "0xe076b93fdc449dbb355813d09f47d6b92f7e2429dc5306c76072359f133ea15c"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x0000000000000000000000000000000000000105",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "12000000000",
+            "Time": 1622002149,
+            "Status": 1,
+            "TransactionHash": "0x705e5d81b6d733f767532f776cc69ef8dd24d2234b8aed163af5892457d0c057"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x0000000000000000000000000000000000000105",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "12000000000",
+            "Time": 1622002124,
+            "Status": 1,
+            "TransactionHash": "0x620080bb6319d8aafe1f992df7fbda3dacd076470918a37d1b30cff1e17f3319"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x0000000000000000000000000000000000000105",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "12000000000",
+            "Time": 1622002099,
+            "Status": 1,
+            "TransactionHash": "0xcd6e589b661e87635b634ee7bb869a3587da36f06acf622001f65b119ddcab08"
+        }
+    ]
+}
+```
+
 ### POST pltholderinfo
 
 Request 
@@ -1375,6 +1462,82 @@ Example Response
 }
 ```
 
+### POST allnftsholdersofuser
+
+Request 
+```
+http://localhost:8080/v1/allnftsholdersofuser
+```
+
+BODY raw
+```
+{
+    "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+    "PageNo":0,
+    "PageSize":10
+}
+```
+
+Example Request
+```
+curl --location --request POST 'http://localhost:8080/v1/allnftsholdersofuser' \
+--data-raw '{
+    "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+    "PageNo":0,
+    "PageSize":10
+}'
+```
+
+Example Response
+```
+{
+    "PageSize": 10,
+    "PageNo": 0,
+    "TotalPage": 1,
+    "TotalCount": 2,
+    "NFTUsers": [
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "TokenNumber": 3,
+            "ContractInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Type": 1,
+                "Name": "JpDigitalCat01",
+                "Symbol": "JDC-01",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "",
+                "Site": "",
+                "Time": 1612421689,
+                "TotalSupply": 3,
+                "AddressNum": 1,
+                "TransferNum": 9
+            },
+            "Percent": "0%"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001002",
+            "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "TokenNumber": 1,
+            "ContractInfo": {
+                "Contract": "0x0000000000000000000000000000000000001002",
+                "Type": 1,
+                "Name": "JpDigitalCat02",
+                "Symbol": "JDC-02",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "",
+                "Site": "",
+                "Time": 1612434549,
+                "TotalSupply": 3,
+                "AddressNum": 2,
+                "TransferNum": 3
+            },
+            "Percent": "0%"
+        }
+    ]
+}
+```
+
 ### POST nftholders
 
 Request 
@@ -1599,6 +1762,317 @@ Example Response
                 "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
                 "Uri": "cat2.jpeg"
             }
+        }
+    ]
+}
+```
+
+
+### POST nfttransactionsofuser
+
+Request 
+```
+http://localhost:8080/v1/nfttransactionsofuser
+```
+
+BODY raw
+```
+{
+    "User":"0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+    "Contract": "0x0000000000000000000000000000000000001001",
+    "PageNo":0,
+    "PageSize":10
+}
+```
+
+Example Request
+```
+curl --location --request POST 'http://localhost:8080/v1/nfttransactionsofuser' \
+--data-raw '{
+    "User":"0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+    "Contract": "0x0000000000000000000000000000000000001001",
+    "PageNo":0,
+    "PageSize":10
+}'
+```
+
+Example Response
+```
+{
+    "PageSize": 10,
+    "PageNo": 0,
+    "TotalPage": 1,
+    "TotalCount": 9,
+    "TransactionDetails": [
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x2cd9d589d46122e4eddc495b49feda0b526c1af7",
+            "To": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "Value": "3",
+            "Time": 1612434369,
+            "Status": 1,
+            "TransactionHash": "0x39a019e2fd0e17168763dcb6c11ab06103a9f9c5a98bc260fb5ddddddacee0b3",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "3",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat3.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0x2cd9d589d46122e4eddc495b49feda0b526c1af7",
+            "Value": "3",
+            "Time": 1612434364,
+            "Status": 1,
+            "TransactionHash": "0xa16958915989fac051715356ce6f8a87f13acad230d68229a4de7852ebad93ec",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "3",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat3.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x2cd9d589d46122e4eddc495b49feda0b526c1af7",
+            "To": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "Value": "2",
+            "Time": 1612434344,
+            "Status": 1,
+            "TransactionHash": "0x7683e2f61d6168d838841cb4e6f0bccdce4488b7ef2abad797498362eeb38058",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "2",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat2.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0x2cd9d589d46122e4eddc495b49feda0b526c1af7",
+            "Value": "2",
+            "Time": 1612434339,
+            "Status": 1,
+            "TransactionHash": "0xc9e62f19bbf4956db22117e4f80eb1dee0a421e0db7e95c7e9b1e7c02a2afd3b",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "2",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat2.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x2cd9d589d46122e4eddc495b49feda0b526c1af7",
+            "To": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "Value": "1",
+            "Time": 1612434309,
+            "Status": 1,
+            "TransactionHash": "0x11e2014375403533664e1e7c92854e654eb375a83ad28d1239e39f80a84e4cc0",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "1",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat1.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0x2cd9d589d46122e4eddc495b49feda0b526c1af7",
+            "Value": "1",
+            "Time": 1612434299,
+            "Status": 1,
+            "TransactionHash": "0xeef1decdeb98a12ad4bba6e759c71b2b53b852b8b5edbcd927b9299d791a8814",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "1",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat1.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x0000000000000000000000000000000000000000",
+            "To": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "Value": "1",
+            "Time": 1612427249,
+            "Status": 1,
+            "TransactionHash": "0xc449123ec72caea8fc25b8ad03b570287ac71da18a2eda1534337a076062d040",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "1",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat1.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x0000000000000000000000000000000000000000",
+            "To": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "Value": "3",
+            "Time": 1612427124,
+            "Status": 1,
+            "TransactionHash": "0x1548a65af2c7205ff5b345238b7e0555864d2da1e9a0130e50384e69c3bc748c",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "3",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat3.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001001",
+            "From": "0x0000000000000000000000000000000000000000",
+            "To": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "Value": "2",
+            "Time": 1612427049,
+            "Status": 1,
+            "TransactionHash": "0xdeab8611e43a4fb6a7de9115da057e6d048e7b11bbfacd87e1ad53c2b0720432",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001001",
+                "Token": "2",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat2.jpeg"
+            }
+        }
+    ]
+}
+```
+
+
+### POST allnftstransactionsofuser
+
+Request 
+```
+http://localhost:8080/v1/allnftstransactionsofuser
+```
+
+BODY raw
+```
+{
+    "User":"0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+    "PageNo":0,
+    "PageSize":10
+}
+```
+
+Example Request
+```
+curl --location --request POST 'http://localhost:8080/v1/allnftstransactionsofuser' \
+--data-raw '{
+    "User":"0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+    "PageNo":0,
+    "PageSize":10
+}'
+```
+
+Example Response
+```
+{
+    "PageSize": 10,
+    "PageNo": 0,
+    "TotalPage": 3,
+    "TotalCount": 22,
+    "TransactionDetails": [
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1613706261,
+            "Status": 1,
+            "TransactionHash": "0x2fa8ea0e808634e66959a78e32207b0c841f6bb01924a8fb59927df33a1425fe"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1613703906,
+            "Status": 1,
+            "TransactionHash": "0x14ec7b1befe1ce94e4ad68edbbec2a291f16326553382b8363c558e237b0895d"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1612509544,
+            "Status": 1,
+            "TransactionHash": "0x06d22ab3ed34b0c6aac7e9c8d40052c38d2b736482d70658c0245408dcacd355"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1612507684,
+            "Status": 1,
+            "TransactionHash": "0x8c7d17be7f3fce8f038aa6c1df4b10c259475b3d57a32359588a7e03a9f06c8e"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1612507489,
+            "Status": 1,
+            "TransactionHash": "0x369830b03dedaedf4346a8abe19fc10bd82294f774825e47cf0ee25993a1c9d9"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1612503139,
+            "Status": 1,
+            "TransactionHash": "0x84630051529df60b20277d8f3d104d0dcb07c85b66d7195ad43025101fd0c068"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1612436884,
+            "Status": 1,
+            "TransactionHash": "0x02f380c8c085feca559d0df1c6cce4852310ddacf3c601f3850af7ba07075580"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000001002",
+            "From": "0x0000000000000000000000000000000000000000",
+            "To": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "Value": "6",
+            "Time": 1612436884,
+            "Status": 1,
+            "TransactionHash": "0x02f380c8c085feca559d0df1c6cce4852310ddacf3c601f3850af7ba07075580",
+            "TokenInfo": {
+                "Contract": "0x0000000000000000000000000000000000001002",
+                "Token": "6",
+                "Owner": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+                "Uri": "cat6.jpeg"
+            }
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1612436689,
+            "Status": 1,
+            "TransactionHash": "0x178db55f18a653154e98409ea514adeef79b35150a9e7d3e035397d3de4213b8"
+        },
+        {
+            "Contract": "0x0000000000000000000000000000000000000103",
+            "From": "0x6a708455c8777630aac9d1e7702d13f7a865b27c",
+            "To": "0xa2ec66f9dee661e096db3c4de1187d32e48cc959",
+            "Value": "0",
+            "Time": 1612436334,
+            "Status": 1,
+            "TransactionHash": "0x84055ce24bd724023c2b774799aa11256245deb02ea68137171df96855005481"
         }
     ]
 }

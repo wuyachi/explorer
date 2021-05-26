@@ -4,6 +4,8 @@ import (
 	"explorer/basedef"
 	"explorer/utils"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/contracts/native"
 	"github.com/ethereum/go-ethereum/contracts/native/utils/decimal"
 )
 
@@ -252,6 +254,15 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
 	}
+
+	thisAddr := common.HexToAddress(transactionDetailResp.Contract)
+	expectAddr := common.HexToAddress(native.PLTContractAddress)
+	if thisAddr == expectAddr {
+		var pltAmount uint64
+		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
+		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
+	}
+
 	if transactionDetail.ContractInfo != nil {
 		transactionDetailResp.ContractInfo = MakeContractInfoResponse(transactionDetail.ContractInfo)
 	}
@@ -273,6 +284,13 @@ func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *Trans
 		Time:            transactionDetail.Time,
 		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
+	}
+	thisAddr := common.HexToAddress(transactionDetailResp.Contract)
+	expectAddr := common.HexToAddress(native.PLTContractAddress)
+	if thisAddr == expectAddr {
+		var pltAmount uint64
+		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
+		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
 	}
 	return transactionDetailResp
 }

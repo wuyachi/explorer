@@ -1,0 +1,17 @@
+{
+  "Contracts": [
+    {
+      "Contract": "",
+      "Uri": "",
+      "Site": "",
+      "Description": ""
+    }
+  ],
+  "DBConfig": {
+    "URL": "localhost:3306",
+    "User": "root",
+    "Password": "root",
+    "Scheme": "palette",
+    "Debug": true
+  }
+}

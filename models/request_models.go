@@ -393,6 +393,8 @@ type ContractInfoResp struct {
 	Owner       string
 	Uri         string
 	Site        string
+	Description string
+	BaseUri string
 	Time        uint64
 	TotalSupply uint64
 	AddressNum  uint64
@@ -409,6 +411,8 @@ func MakeContractInfoResponse(nftContract *ContractInfo) *ContractInfoResp {
 		Uri:         nftContract.Uri,
 		Site:        nftContract.Site,
 		Time:        nftContract.Time,
+		BaseUri: nftContract.BaseUri,
+		Description: nftContract.Description,
 		TotalSupply: nftContract.TotalSupply,
 		AddressNum:  nftContract.AddressNum,
 		TransferNum: nftContract.TransferNum,

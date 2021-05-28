@@ -140,6 +140,7 @@ type ContractInfo struct {
 	Owner       string `gorm:"size:42;not null"`
 	Uri         string `gorm:"size:66;not null"`
 	Site        string `gorm:"size:66;not null"`
+	Description string `gorm:"size:1024;not null"`
 	BaseUri         string `gorm:"size:66;not null"`
 	Time        uint64 `gorm:"type:bigint(20);not null"`
 	TotalSupply uint64 `gorm:"type:bigint(20);not null"`

@@ -239,6 +239,7 @@ type TransactionDetailResp struct {
 	Value           string
 	Time            uint64
 	Status          uint64
+	IsNft           bool
 	TransactionHash string
 	ContractInfo    *ContractInfoResp `json:",omitempty"`
 	TokenInfo       *NFTHolderResp    `json:",omitempty"`
@@ -261,6 +262,8 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 		var pltAmount uint64
 		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
 		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
+	} else {
+		transactionDetailResp.IsNft = true
 	}
 
 	if transactionDetail.ContractInfo != nil {
@@ -291,6 +294,8 @@ func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *Trans
 		var pltAmount uint64
 		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
 		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
+	} else {
+		transactionDetailResp.IsNft = true
 	}
 	return transactionDetailResp
 }

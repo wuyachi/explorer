@@ -43,8 +43,11 @@ go build main.go
 ```
 
 NodeConfig.RestURL: palette链的节点
+
 NodeConfig.Admin: palette链的管理员地址
+
 Statistic: 1: 做交易统计  2: 不做交易统计
+
 DBConfig: 数据库配置
 
 ### 启动
@@ -71,6 +74,7 @@ mysqldebug = true
 ```
 
 httpport: 服务端口
+
 mysql: 数据库配置
 
 配置文件置于palette_http同目录下的conf子目录中

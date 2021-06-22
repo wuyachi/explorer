@@ -75,6 +75,10 @@ type Transaction1 struct {
 	TransactionDetails []*TransactionDetailWithInfo `gorm:"foreignKey:TransactionHash;references:Hash"`
 }
 
+func (Transaction1) TableName() string {
+	return "transactions"
+}
+
 type TransactionDetailWithInfo struct {
 	Contract        string        `gorm:"size:42;not null"`
 	ContractInfo    *ContractInfo `gorm:"foreignKey:Contract;references:Contract"`

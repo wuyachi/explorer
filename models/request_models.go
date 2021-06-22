@@ -165,6 +165,31 @@ func MakeTransactionResponse(transaction *Transaction) *TransactionResp {
 	return transactionResp
 }
 
+func MakeTransaction1Response(transaction *Transaction1) *TransactionResp {
+	transactionResp := &TransactionResp{
+		Hash:        transaction.Hash,
+		From:        transaction.From,
+		Cost:        transaction.Cost,
+		Data:        transaction.Data,
+		Gas:         transaction.Gas,
+		GasPrice:    utils.AmountWithoutPrecision(transaction.GasPrice),
+		To:          transaction.To,
+		Value:       utils.AmountWithoutPrecision(transaction.Value),
+		BlockNumber: transaction.BlockNumber,
+		Time:        transaction.Time,
+		BlockHash:   transaction.BlockHash,
+		Type:        transaction.Type,
+		Status:      transaction.Status,
+	}
+	for _, event := range transaction.Events {
+		transactionResp.Events = append(transactionResp.Events, MakeEventResponse(event))
+	}
+	for _, transactionDetail := range transaction.TransactionDetails {
+		transactionResp.TransactionDetails = append(transactionResp.TransactionDetails, MakeTransactionDetailResponse(transactionDetail))
+	}
+	return transactionResp
+}
+
 type TransactionsReq struct {
 	PageSize int
 	PageNo   int

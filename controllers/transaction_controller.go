@@ -10,6 +10,7 @@ type TransactionController struct {
 	beego.Controller
 }
 
+/*
 func (c *TransactionController) TransactionByHash() {
 	var transactionByHashReq models.TransactionByHashReq
 	var err error
@@ -19,6 +20,20 @@ func (c *TransactionController) TransactionByHash() {
 	transactionInfo := new(models.Transaction)
 	db.Where("hash = ?", transactionByHashReq.Hash).Preload("Events").Preload("TransactionDetails").First(transactionInfo)
 	c.Data["json"] = models.MakeTransactionResponse(transactionInfo)
+	c.ServeJSON()
+}
+*/
+
+func (c *TransactionController) TransactionByHash() {
+	var transactionByHashReq models.TransactionByHashReq
+	var err error
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &transactionByHashReq); err != nil {
+		panic(err)
+	}
+	transactionInfo := new(models.Transaction1)
+	db.Where("hash = ?", transactionByHashReq.Hash).Preload("Events").Preload("TransactionDetails").
+		Preload("TransactionDetails.ContractInfo").Preload("TransactionDetails.NFTHolder").First(transactionInfo)
+	c.Data["json"] = models.MakeTransaction1Response(transactionInfo)
 	c.ServeJSON()
 }
 

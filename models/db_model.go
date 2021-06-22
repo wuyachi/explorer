@@ -56,6 +56,25 @@ type TransactionDetail struct {
 	Transaction     *Transaction `gorm:"foreignKey:TransactionHash;references:Hash"`
 }
 
+type Transaction1 struct {
+	Hash               string               `gorm:"primaryKey;size:66;not null"`
+	From               string               `gorm:"size:42;not null"`
+	Cost               uint64               `gorm:"type:bigint(20);not null"`
+	Data               string               `gorm:"size:4096;not null"`
+	Gas                uint64               `gorm:"type:bigint(20);not null"`
+	GasPrice           uint64               `gorm:"type:bigint(20);not null"`
+	To                 string               `gorm:"size:42;not null"`
+	Value              uint64               `gorm:"type:bigint(20);not null"`
+	Time               uint64               `gorm:"type:bigint(20);not null"`
+	BlockNumber        uint64               `gorm:"type:bigint(20);index;not null"`
+	Type               uint64               `gorm:"type:bigint(20);not null"`
+	Status             uint64               `gorm:"type:bigint(20);not null"`
+	BlockHash          string               `gorm:"size:66;not null"`
+	Block              *Block               `gorm:"foreignKey:BlockHash;references:Hash"`
+	Events             []*Event             `gorm:"foreignKey:TransactionHash;references:Hash"`
+	TransactionDetails []*TransactionDetailWithInfo `gorm:"foreignKey:TransactionHash;references:Hash"`
+}
+
 type TransactionDetailWithInfo struct {
 	Contract        string        `gorm:"size:42;not null"`
 	ContractInfo    *ContractInfo `gorm:"foreignKey:Contract;references:Contract"`

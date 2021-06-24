@@ -1,28 +1,33 @@
-# palette explorer部署文档
+# palette explorer depoly
 
-## 代码
+## build from source code
+
+### code
 
 [github](https://github.com/palettechain/explorer)
 
-## build
+### build
 
-### 编译扫描程序palette_server
+#### build palette_server
 ```
 cd ./cmd
 go build main.go
 ```
 
-### 编译服务程序palette_http
+#### build palette_http
 
 ```
 cd .
 go build main.go
 ```
 
+## package
 
-## 启动palette_server
+[package](https://github.com/palettechain/explorer/releases/tag/v0.1.1)
 
-### 配置
+## install palette_server
+
+### config
 
 ```
 {
@@ -42,24 +47,24 @@ go build main.go
 }
 ```
 
-NodeConfig.RestURL: palette链的节点
+NodeConfig.RestURL: the node url of palette chain
 
-NodeConfig.Admin: palette链的管理员地址
+NodeConfig.Admin: the admin address of palette chain
 
-Statistic: 1: 做交易统计  2: 不做交易统计
+Statistic: 1: start the statistic of transactions  2: don't start the statistic of transactions
 
-DBConfig: 数据库配置
+DBConfig: the config of database
 
-### 启动
+### start
 
 ```
 ./palette_server --cliconfig config.json
 ```
 
 
-## 启动palette_http
+## install palette_http
 
-### 配置
+### config
 
 ```
 appname = explorer
@@ -73,14 +78,14 @@ mysqldb   = "palette"
 mysqldebug = true
 ```
 
-httpport: 服务端口
+httpport: the port
 
-mysql: 数据库配置
+mysql: the config of database
 
-配置文件置于palette_http同目录下的conf子目录中
+please put the configuration file in the directory ./conf
 
 
-### 启动
+### start
 
 ```
 ./palette_http

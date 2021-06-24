@@ -1,10 +1,10 @@
-# palette explorer depoly
+# palette explorer deploy
 
 ## build from source code
 
 ### code
 
-[github](https://github.com/palettechain/explorer)
+[source code](https://github.com/palettechain/explorer)
 
 ### build
 
@@ -21,9 +21,9 @@ cd .
 go build main.go
 ```
 
-## package
+## get the package
 
-[package](https://github.com/palettechain/explorer/releases/tag/v0.1.1)
+[palette explorer package](https://github.com/palettechain/explorer/releases/tag/v0.1.1)
 
 ## install palette_server
 

@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
-	github.com/palettechain/palette-go-sdk v0.0.0
+	github.com/palettechain/palette-go-sdk v0.0.1
 	github.com/prometheus/tsdb v0.7.1 // indirect
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
@@ -27,6 +27,5 @@ replace (
 	github.com/coreos/go-semver v0.0.1 => github.com/polynetwork/coreos-semver v0.0.1
 	github.com/coreos/go-systemd v0.0.1 => github.com/polynetwork/coreos-systemd v0.0.1
 	github.com/coreos/pkg v0.0.1 => github.com/polynetwork/coreos-pkg v0.0.1
-	github.com/ethereum/go-ethereum v1.9.24 => c:/Users/DELL/go/src/github.com/ethereum/palette
-	github.com/palettechain/palette-go-sdk v0.0.0 => c:/Users/DELL/go/src/github.com/palettechain/palette-go-sdk
+	github.com/ethereum/go-ethereum v1.9.24 => github.com/palettechain/palette v0.2.4
 )

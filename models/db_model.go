@@ -218,13 +218,13 @@ type ContractInfo struct {
 type Stake struct {
 	Owner       string `gorm:"primaryKey;size:42;not null"`
 	Validator   string `gorm:"primaryKey;size:42;not null"`
-	StakeAmount uint64 `gorm:"type:bigint(20);not null"`
+	StakeAmount *BigInt `gorm:"type:varchar(64);not null"`
 }
 
 type Validator struct {
 	Address        string `gorm:"primaryKey;size:42;not null"`
 	DelegateFactor uint64 `gorm:"type:bigint(20);not null"`
-	StakeAmount    uint64 `gorm:"type:bigint(20);not null"`
+	StakeAmount    *BigInt `gorm:"type:varchar(64);not null"`
 	Name           string `gorm:"size:66;not null"`
 	Uri            string `gorm:"size:66;not null"`
 }
@@ -232,7 +232,7 @@ type Validator struct {
 type ValidatorWithPercent struct {
 	Address        string  `gorm:"primaryKey;size:42;not null"`
 	DelegateFactor uint64  `gorm:"type:bigint(20);not null"`
-	StakeAmount    uint64  `gorm:"type:bigint(20);not null"`
+	StakeAmount    *BigInt  `gorm:"type:varchar(64);not null"`
 	Name           string  `gorm:"size:66;not null"`
 	Uri            string  `gorm:"size:66;not null"`
 	Percent        float64 `gorm:"not null"`

@@ -614,7 +614,7 @@ func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
 	stakeInfoResp := &StakeInfoResp{
 		Owner:     stake.Owner,
 		Validator: stake.Validator,
-		Amount:    utils.AmountWithoutPrecision(stake.StakeAmount),
+		Amount:    stake.StakeAmount.String(),
 	}
 	return stakeInfoResp
 }
@@ -693,7 +693,7 @@ func MakeValidatorInfoResponse(validator *ValidatorWithPercent) *ValidatorInfoRe
 	validatorInfoResp := &ValidatorInfoResp{
 		Address:        validator.Address,
 		DelegateFactor: delegateFactor,
-		StakeAmount:    utils.AmountWithoutPrecision(validator.StakeAmount),
+		StakeAmount:    validator.StakeAmount.String(),
 		Percent:        basedef.FromatPercent(validator.Percent),
 	}
 	return validatorInfoResp

@@ -358,7 +358,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					validator := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
 					owner := strings.ToLower(common.BytesToAddress(event.Topic[2].Bytes()).String())
 					revoke := utils.Hash2Bool(event.Topic[3])
-					amount := utils.AbandonPrecision(new(big.Int).SetBytes(event.Data))
+					amount := new(big.Int).SetBytes(event.Data)
 
 					var stakeInfo *models.Stake
 					stakeInfo, ok := stakeMap[owner+validator]
@@ -368,12 +368,12 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					}
 
 					if revoke == false {
-						stakeInfo.StakeAmount = stakeInfo.StakeAmount + amount
+						stakeInfo.StakeAmount = models.NewBigInt(new(big.Int).Add(&stakeInfo.StakeAmount.Int, amount))
 					} else {
-						if stakeInfo.StakeAmount < amount {
+						if stakeInfo.StakeAmount.Cmp(amount) < 0 {
 							logs.Error("unstake : %s amount is %d, but stake amount is %d", owner, amount, stakeInfo.StakeAmount)
 						}
-						stakeInfo.StakeAmount = stakeInfo.StakeAmount - amount
+						stakeInfo.StakeAmount = models.NewBigInt(new(big.Int).Sub(&stakeInfo.StakeAmount.Int, amount))
 					}
 				}
 			}
@@ -413,7 +413,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		factor, _ := this.sdk.GovernanceGetDelegateFactor(validator)
 		amount, _ := this.sdk.GovernanceGetValidatorTotalStakeAmount(validator)
 		validatorInfo.DelegateFactor = factor.Uint64()
-		validatorInfo.StakeAmount = utils.AbandonPrecision(amount)
+		validatorInfo.StakeAmount = models.NewBigInt(amount)
 		validatorInfos = append(validatorInfos, validatorInfo)
 	}
 

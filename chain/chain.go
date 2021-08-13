@@ -525,6 +525,9 @@ func (this *Chain) getStake(owner string, validator string) *models.Stake {
 	}
 	stakeInfo = new(models.Stake)
 	this.db.Where("owner = ? and validator = ?", owner, validator).First(stakeInfo)
+	if stakeInfo.StakeAmount == nil {
+		stakeInfo.StakeAmount = models.NewBigIntFromInt(0)
+	}
 	stakeInfo.Owner = owner
 	stakeInfo.Validator = validator
 	this.stakeCache[owner+validator] = stakeInfo

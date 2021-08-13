@@ -1,5 +1,49 @@
 package models
 
+import (
+	"database/sql/driver"
+	"fmt"
+	"math/big"
+)
+
+
+type BigInt struct {
+	big.Int
+}
+
+func NewBigIntFromInt(value int64) *BigInt {
+	x := new(big.Int).SetInt64(value)
+	return NewBigInt(x)
+}
+
+func NewBigInt(value *big.Int) *BigInt {
+	return &BigInt{Int: *value}
+}
+
+func (bigInt *BigInt) Value() (driver.Value, error) {
+	if bigInt == nil {
+		return "null", nil
+	}
+	return bigInt.String(), nil
+}
+
+func (bigInt *BigInt) Scan(v interface{}) error {
+	value, ok := v.([]byte)
+	if !ok {
+		return fmt.Errorf("type error, %v", v)
+	}
+	str := string(value)
+	if str == "null" || str == "nil" || str == "<nil>" {
+		return nil
+	}
+	data, ok := new(big.Int).SetString(str, 10)
+	if !ok {
+		return fmt.Errorf("not a valid big integer: %s", value)
+	}
+	bigInt.Int = *data
+	return nil
+}
+
 type Chain struct {
 	Id           uint64 `gorm:"primaryKey;type:bigint(20);not null;auto_increment"`
 	Name         string `gorm:"size:64"`
@@ -35,7 +79,7 @@ type Transaction struct {
 	Gas                uint64               `gorm:"type:bigint(20);not null"`
 	GasPrice           uint64               `gorm:"type:bigint(20);not null"`
 	To                 string               `gorm:"size:42;not null"`
-	Value              uint64               `gorm:"type:bigint(20);not null"`
+	Value              *BigInt              `gorm:"type:varchar(64);not null"`
 	Time               uint64               `gorm:"type:bigint(20);not null"`
 	BlockNumber        uint64               `gorm:"type:bigint(20);index;not null"`
 	Type               uint64               `gorm:"type:bigint(20);not null"`
@@ -50,7 +94,7 @@ type TransactionDetail struct {
 	Contract        string       `gorm:"size:42;not null"`
 	From            string       `gorm:"size:42;not null"`
 	To              string       `gorm:"size:42;not null"`
-	Value           string       `gorm:"size:66;not null"`
+	Value           *BigInt       `gorm:"type:varchar(64);not null"`
 	Time            uint64       `gorm:"type:bigint(20);not null"`
 	TransactionHash string       `gorm:"size:66;not null"`
 	Transaction     *Transaction `gorm:"foreignKey:TransactionHash;references:Hash"`
@@ -64,7 +108,7 @@ type Transaction1 struct {
 	Gas                uint64               `gorm:"type:bigint(20);not null"`
 	GasPrice           uint64               `gorm:"type:bigint(20);not null"`
 	To                 string               `gorm:"size:42;not null"`
-	Value              uint64               `gorm:"type:bigint(20);not null"`
+	Value              *BigInt              `gorm:"type:varchar(64);not null"`
 	Time               uint64               `gorm:"type:bigint(20);not null"`
 	BlockNumber        uint64               `gorm:"type:bigint(20);index;not null"`
 	Type               uint64               `gorm:"type:bigint(20);not null"`
@@ -84,7 +128,7 @@ type TransactionDetailWithInfo struct {
 	ContractInfo    *ContractInfo `gorm:"foreignKey:Contract;references:Contract"`
 	From            string        `gorm:"size:42;not null"`
 	To              string        `gorm:"size:42;not null"`
-	Value           string        `gorm:"size:66;not null"`
+	Value           *BigInt       `gorm:"type:varchar(64);not null"`
 	NFTHolder       *NFTHolder    `gorm:"foreignKey:Contract,Value;references:NFT,Token"`
 	Time            uint64        `gorm:"type:bigint(20);not null"`
 	TransactionHash string        `gorm:"size:66;not null"`
@@ -111,7 +155,7 @@ type Event struct {
 
 type PLTHolder struct {
 	Address string `gorm:"primaryKey;size:42;not null"`
-	Amount  uint64 `gorm:"type:bigint(20);not null"`
+	Amount  *BigInt `gorm:"type:varchar(64);not null"`
 }
 
 type PLTHolderWithPercent struct {

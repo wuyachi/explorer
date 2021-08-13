@@ -7,7 +7,6 @@ import (
 	"explorer/conf"
 	"explorer/models"
 	"explorer/utils"
-	"fmt"
 	"github.com/astaxie/beego/logs"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/contracts/native"
@@ -67,7 +66,7 @@ func NewChain(cfg *conf.Config) *Chain {
 	db.Create(paletteChain)
 	adminAccount := new(models.PLTHolder)
 	adminAccount.Address = strings.ToLower(common.HexToAddress(cfg.NodeConfig.Admin).String())
-	adminAccount.Amount = 600000000000000000
+	adminAccount.Amount = models.NewBigIntFromInt(600000000000000000)
 	db.Create(adminAccount)
 	contractInfo := new(models.ContractInfo)
 	contractInfo.Type = basedef.CONTRACT_TYPE_PLT
@@ -179,7 +178,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		} else {
 			transactionInfo.To = strings.ToLower(transaction.To().String())
 		}
-		transactionInfo.Value = utils.AbandonPrecision(transaction.Value())
+		transactionInfo.Value = models.NewBigInt(transaction.Value())
 		transactionInfo.BlockNumber = blockInfo.Number
 		transactionInfo.Time = blockInfo.Time
 		transactionInfo.Type = basedef.TRANSACTION__TYPE_CONTRACTS
@@ -220,14 +219,14 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 				if event.EventId.String() == client.PLTEventID_Transfer {
 					from := strings.ToLower(common.BytesToAddress(event.Topic[0].Bytes()).String())
 					to := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
-					amount := utils.AbandonPrecision(new(big.Int).SetBytes(event.Data))
+					amount := new(big.Int).SetBytes(event.Data)
 
 					txDetailInfo := new(models.TransactionDetail)
 					txDetailInfo.Contract = strings.ToLower(event.Contract.String())
 					txDetailInfo.From = from
 					txDetailInfo.To = to
 					txDetailInfo.Time = blockInfo.Time
-					txDetailInfo.Value = fmt.Sprintf("%d", amount)
+					txDetailInfo.Value = models.NewBigInt(amount)
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 
 					var fromUser *models.PLTHolder
@@ -244,11 +243,11 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						pltContractMap[to] = toUser
 					}
 
-					if fromUser.Amount < amount {
+					if fromUser.Amount.Cmp(amount) < 0 {
 						logs.Error("from : %s amount is %d, but transfer amount is %d", fromUser.Address, fromUser.Amount, amount)
 					}
-					fromUser.Amount = fromUser.Amount - amount
-					toUser.Amount = toUser.Amount + amount
+					fromUser.Amount = models.NewBigInt(new(big.Int).Sub(&fromUser.Amount.Int, amount))
+					toUser.Amount = models.NewBigInt(new(big.Int).Add(&toUser.Amount.Int, amount))
 				}
 				continue
 			}
@@ -264,7 +263,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					txDetailInfo.Contract = strings.ToLower(event.Contract.String())
 					txDetailInfo.From = from
 					txDetailInfo.To = to
-					txDetailInfo.Value = token
+					txDetailInfo.Value = models.NewBigInt(tokenId)
 					txDetailInfo.Time = blockInfo.Time
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 

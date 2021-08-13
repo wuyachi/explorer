@@ -487,6 +487,9 @@ func (this *Chain) getPLTHolder(user string) *models.PLTHolder {
 	this.db.Where("address = ?", user).First(userHolder)
 	userHolder.Address = user
 	this.pltContractCache[user] = userHolder
+	if userHolder.Amount == nil {
+		userHolder.Amount = models.NewBigIntFromInt(0)
+	}
 	return userHolder
 }
 

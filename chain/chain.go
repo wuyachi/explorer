@@ -7,7 +7,6 @@ import (
 	"explorer/conf"
 	"explorer/models"
 	"explorer/utils"
-	"fmt"
 	"github.com/astaxie/beego/logs"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/contracts/native"
@@ -67,7 +66,7 @@ func NewChain(cfg *conf.Config) *Chain {
 	db.Create(paletteChain)
 	adminAccount := new(models.PLTHolder)
 	adminAccount.Address = strings.ToLower(common.HexToAddress(cfg.NodeConfig.Admin).String())
-	adminAccount.Amount = 600000000000000000
+	adminAccount.Amount = models.NewBigIntFromInt(600000000000000000)
 	db.Create(adminAccount)
 	contractInfo := new(models.ContractInfo)
 	contractInfo.Type = basedef.CONTRACT_TYPE_PLT
@@ -179,7 +178,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		} else {
 			transactionInfo.To = strings.ToLower(transaction.To().String())
 		}
-		transactionInfo.Value = utils.AbandonPrecision(transaction.Value())
+		transactionInfo.Value = models.NewBigInt(transaction.Value())
 		transactionInfo.BlockNumber = blockInfo.Number
 		transactionInfo.Time = blockInfo.Time
 		transactionInfo.Type = basedef.TRANSACTION__TYPE_CONTRACTS
@@ -220,14 +219,14 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 				if event.EventId.String() == client.PLTEventID_Transfer {
 					from := strings.ToLower(common.BytesToAddress(event.Topic[0].Bytes()).String())
 					to := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
-					amount := utils.AbandonPrecision(new(big.Int).SetBytes(event.Data))
+					amount := new(big.Int).SetBytes(event.Data)
 
 					txDetailInfo := new(models.TransactionDetail)
 					txDetailInfo.Contract = strings.ToLower(event.Contract.String())
 					txDetailInfo.From = from
 					txDetailInfo.To = to
 					txDetailInfo.Time = blockInfo.Time
-					txDetailInfo.Value = fmt.Sprintf("%d", amount)
+					txDetailInfo.Value = models.NewBigInt(amount)
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 
 					var fromUser *models.PLTHolder
@@ -244,11 +243,11 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						pltContractMap[to] = toUser
 					}
 
-					if fromUser.Amount < amount {
+					if fromUser.Amount.Cmp(amount) < 0 {
 						logs.Error("from : %s amount is %d, but transfer amount is %d", fromUser.Address, fromUser.Amount, amount)
 					}
-					fromUser.Amount = fromUser.Amount - amount
-					toUser.Amount = toUser.Amount + amount
+					fromUser.Amount = models.NewBigInt(new(big.Int).Sub(&fromUser.Amount.Int, amount))
+					toUser.Amount = models.NewBigInt(new(big.Int).Add(&toUser.Amount.Int, amount))
 				}
 				continue
 			}
@@ -264,7 +263,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					txDetailInfo.Contract = strings.ToLower(event.Contract.String())
 					txDetailInfo.From = from
 					txDetailInfo.To = to
-					txDetailInfo.Value = token
+					txDetailInfo.Value = models.NewBigInt(tokenId)
 					txDetailInfo.Time = blockInfo.Time
 					transactionInfo.TransactionDetails = append(transactionInfo.TransactionDetails, txDetailInfo)
 
@@ -359,7 +358,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					validator := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
 					owner := strings.ToLower(common.BytesToAddress(event.Topic[2].Bytes()).String())
 					revoke := utils.Hash2Bool(event.Topic[3])
-					amount := utils.AbandonPrecision(new(big.Int).SetBytes(event.Data))
+					amount := new(big.Int).SetBytes(event.Data)
 
 					var stakeInfo *models.Stake
 					stakeInfo, ok := stakeMap[owner+validator]
@@ -369,12 +368,12 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 					}
 
 					if revoke == false {
-						stakeInfo.StakeAmount = stakeInfo.StakeAmount + amount
+						stakeInfo.StakeAmount = models.NewBigInt(new(big.Int).Add(&stakeInfo.StakeAmount.Int, amount))
 					} else {
-						if stakeInfo.StakeAmount < amount {
+						if stakeInfo.StakeAmount.Cmp(amount) < 0 {
 							logs.Error("unstake : %s amount is %d, but stake amount is %d", owner, amount, stakeInfo.StakeAmount)
 						}
-						stakeInfo.StakeAmount = stakeInfo.StakeAmount - amount
+						stakeInfo.StakeAmount = models.NewBigInt(new(big.Int).Sub(&stakeInfo.StakeAmount.Int, amount))
 					}
 				}
 			}
@@ -414,7 +413,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 		factor, _ := this.sdk.GovernanceGetDelegateFactor(validator)
 		amount, _ := this.sdk.GovernanceGetValidatorTotalStakeAmount(validator)
 		validatorInfo.DelegateFactor = factor.Uint64()
-		validatorInfo.StakeAmount = utils.AbandonPrecision(amount)
+		validatorInfo.StakeAmount = models.NewBigInt(amount)
 		validatorInfos = append(validatorInfos, validatorInfo)
 	}
 
@@ -488,6 +487,9 @@ func (this *Chain) getPLTHolder(user string) *models.PLTHolder {
 	this.db.Where("address = ?", user).First(userHolder)
 	userHolder.Address = user
 	this.pltContractCache[user] = userHolder
+	if userHolder.Amount == nil {
+		userHolder.Amount = models.NewBigIntFromInt(0)
+	}
 	return userHolder
 }
 
@@ -523,6 +525,9 @@ func (this *Chain) getStake(owner string, validator string) *models.Stake {
 	}
 	stakeInfo = new(models.Stake)
 	this.db.Where("owner = ? and validator = ?", owner, validator).First(stakeInfo)
+	if stakeInfo.StakeAmount == nil {
+		stakeInfo.StakeAmount = models.NewBigIntFromInt(0)
+	}
 	stakeInfo.Owner = owner
 	stakeInfo.Validator = validator
 	this.stakeCache[owner+validator] = stakeInfo

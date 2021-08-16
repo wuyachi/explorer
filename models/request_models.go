@@ -149,7 +149,7 @@ func MakeTransactionResponse(transaction *Transaction) *TransactionResp {
 		Gas:         transaction.Gas,
 		GasPrice:    utils.AmountWithoutPrecision(transaction.GasPrice),
 		To:          transaction.To,
-		Value:       utils.AmountWithoutPrecision(transaction.Value),
+		Value:       transaction.Value.String(),
 		BlockNumber: transaction.BlockNumber,
 		Time:        transaction.Time,
 		BlockHash:   transaction.BlockHash,
@@ -174,7 +174,7 @@ func MakeTransaction1Response(transaction *Transaction1) *TransactionResp {
 		Gas:         transaction.Gas,
 		GasPrice:    utils.AmountWithoutPrecision(transaction.GasPrice),
 		To:          transaction.To,
-		Value:       utils.AmountWithoutPrecision(transaction.Value),
+		Value:       transaction.Value.String(),
 		BlockNumber: transaction.BlockNumber,
 		Time:        transaction.Time,
 		BlockHash:   transaction.BlockHash,
@@ -275,7 +275,7 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 		Contract:        transactionDetail.Contract,
 		From:            transactionDetail.From,
 		To:              transactionDetail.To,
-		Value:           transactionDetail.Value,
+		Value:           transactionDetail.Value.String(),
 		Time:            transactionDetail.Time,
 		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
@@ -308,7 +308,7 @@ func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *Trans
 		Contract:        transactionDetail.Contract,
 		From:            transactionDetail.From,
 		To:              transactionDetail.To,
-		Value:           transactionDetail.Value,
+		Value:           transactionDetail.Value.String(),
 		Time:            transactionDetail.Time,
 		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
@@ -614,7 +614,7 @@ func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
 	stakeInfoResp := &StakeInfoResp{
 		Owner:     stake.Owner,
 		Validator: stake.Validator,
-		Amount:    utils.AmountWithoutPrecision(stake.StakeAmount),
+		Amount:    stake.StakeAmount.String(),
 	}
 	return stakeInfoResp
 }
@@ -693,7 +693,7 @@ func MakeValidatorInfoResponse(validator *ValidatorWithPercent) *ValidatorInfoRe
 	validatorInfoResp := &ValidatorInfoResp{
 		Address:        validator.Address,
 		DelegateFactor: delegateFactor,
-		StakeAmount:    utils.AmountWithoutPrecision(validator.StakeAmount),
+		StakeAmount:    validator.StakeAmount.String(),
 		Percent:        basedef.FromatPercent(validator.Percent),
 	}
 	return validatorInfoResp

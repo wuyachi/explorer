@@ -284,9 +284,11 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 	thisAddr := common.HexToAddress(transactionDetailResp.Contract)
 	expectAddr := common.HexToAddress(native.PLTContractAddress)
 	if thisAddr == expectAddr {
+		/*
 		var pltAmount uint64
 		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
 		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
+		*/
 	} else {
 		transactionDetailResp.IsNft = true
 	}
@@ -316,9 +318,11 @@ func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *Trans
 	thisAddr := common.HexToAddress(transactionDetailResp.Contract)
 	expectAddr := common.HexToAddress(native.PLTContractAddress)
 	if thisAddr == expectAddr {
+		/*
 		var pltAmount uint64
 		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
 		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
+		*/
 	} else {
 		transactionDetailResp.IsNft = true
 	}

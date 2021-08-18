@@ -42,8 +42,8 @@ func (c *PLTContractController) PLTHolders() {
 		panic(err)
 	}
 	pltContracts := make([]*models.PLTHolderWithPercent, 0)
-	db.Table("(?) as u, plt_holders", db.Model(&models.PLTHolderWithPercent{}).Select("sum(amount) as total")).
-		Select("address, amount, amount/total as percent").Limit(pltHoldersReq.PageSize).Offset(pltHoldersReq.PageSize * pltHoldersReq.PageNo).Order("amount desc").Find(&pltContracts)
+	db.Table("(?) as u, plt_holders", db.Model(&models.PLTHolderWithPercent{}).Select("sum(amount) as total").Where("amount > 0")).
+		Select("address, amount, amount/total as percent").Where("amount >= 0").Limit(pltHoldersReq.PageSize).Offset(pltHoldersReq.PageSize * pltHoldersReq.PageNo).Order("amount desc").Find(&pltContracts)
 	var pltContractNum int64
 	db.Model(&models.PLTHolderWithPercent{}).Count(&pltContractNum)
 	c.Data["json"] = models.MakePLTHoldersResponse(pltHoldersReq.PageSize, pltHoldersReq.PageNo,

@@ -174,7 +174,7 @@ func MakeTransaction1Response(transaction *Transaction1) *TransactionResp {
 		Gas:         transaction.Gas,
 		GasPrice:    utils.AmountWithoutPrecision(transaction.GasPrice),
 		To:          transaction.To,
-		Value:       transaction.Value.String(),
+		Value:       transaction.Value.FormatAsPLT(),
 		BlockNumber: transaction.BlockNumber,
 		Time:        transaction.Time,
 		BlockHash:   transaction.BlockHash,
@@ -275,7 +275,7 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 		Contract:        transactionDetail.Contract,
 		From:            transactionDetail.From,
 		To:              transactionDetail.To,
-		Value:           transactionDetail.Value.String(),
+		Value:           transactionDetail.Value.FormatAsPLT(),
 		Time:            transactionDetail.Time,
 		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
@@ -310,7 +310,7 @@ func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *Trans
 		Contract:        transactionDetail.Contract,
 		From:            transactionDetail.From,
 		To:              transactionDetail.To,
-		Value:           transactionDetail.Value.String(),
+		Value:           transactionDetail.Value.FormatAsPLT(),
 		Time:            transactionDetail.Time,
 		Status:          basedef.TRANSACTION_STATUS_SUCCESS,
 		TransactionHash: transactionDetail.TransactionHash,
@@ -383,7 +383,7 @@ type PLTHolderInfoResp struct {
 func MakePLTHolderInfoResponse(pltContract *PLTHolderWithPercent) *PLTHolderInfoResp {
 	pltHolderInfoResp := &PLTHolderInfoResp{
 		Address: pltContract.Address,
-		Amount:  utils.AmountWithoutPrecision(pltContract.Amount),
+		Amount:  pltContract.Amount.FormatAsPLT(),
 		Percent: basedef.FromatPercent(pltContract.Percent),
 	}
 	return pltHolderInfoResp
@@ -618,7 +618,7 @@ func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
 	stakeInfoResp := &StakeInfoResp{
 		Owner:     stake.Owner,
 		Validator: stake.Validator,
-		Amount:    stake.StakeAmount.String(),
+		Amount:    stake.StakeAmount.FormatAsPLT(),
 	}
 	return stakeInfoResp
 }
@@ -697,7 +697,7 @@ func MakeValidatorInfoResponse(validator *ValidatorWithPercent) *ValidatorInfoRe
 	validatorInfoResp := &ValidatorInfoResp{
 		Address:        validator.Address,
 		DelegateFactor: delegateFactor,
-		StakeAmount:    validator.StakeAmount.String(),
+		StakeAmount:    validator.StakeAmount.FormatAsPLT(),
 		Percent:        basedef.FromatPercent(validator.Percent),
 	}
 	return validatorInfoResp

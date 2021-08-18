@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql/driver"
 	"fmt"
+	"github.com/ethereum/go-ethereum/contracts/native/utils/decimal"
 	"math/big"
 )
 
@@ -18,6 +19,19 @@ func NewBigIntFromInt(value int64) *BigInt {
 
 func NewBigInt(value *big.Int) *BigInt {
 	return &BigInt{Int: *value}
+}
+
+func FormatAmount(precision uint64, amount *BigInt) string {
+	precision_new := decimal.NewFromBigInt(big.NewInt(1), int32(precision))
+	amount_new := decimal.NewFromBigInt(&amount.Int, 0)
+	return amount_new.Div(precision_new).String()
+}
+
+func (bigInt *BigInt) FormatAsPLT() string {
+	if bigInt == nil {
+		return "0"
+	}
+	return FormatAmount(18, bigInt)
 }
 
 func (bigInt *BigInt) Value() (driver.Value, error) {
@@ -160,7 +174,7 @@ type PLTHolder struct {
 
 type PLTHolderWithPercent struct {
 	Address string  `gorm:"primaryKey;size:42;not null"`
-	Amount  uint64  `gorm:"type:bigint(20);not null"`
+	Amount  *BigInt  `gorm:"type:varchar(64);not null"`
 	Percent float64 `gorm:"not null"`
 }
 

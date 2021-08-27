@@ -7,6 +7,10 @@ import (
 	"math/big"
 )
 
+const (
+	HOLDER_STATE_NORMAL = 0
+	HOLDER_STATE_HIDDEN = 1
+)
 
 type BigInt struct {
 	big.Int
@@ -170,6 +174,7 @@ type Event struct {
 type PLTHolder struct {
 	Address string `gorm:"primaryKey;size:42;not null"`
 	Amount  *BigInt `gorm:"type:varchar(64);not null"`
+	State 	int 	`gorm:"type:int;index;not null; default 0"`
 }
 
 type PLTHolderWithPercent struct {

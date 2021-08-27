@@ -45,7 +45,7 @@ func (c *PLTContractController) PLTHolders() {
 	db.Table("(?) as u, plt_holders", db.Model(&models.PLTHolderWithPercent{}).Select("sum(amount) as total").Where("amount > 0 and state=0")).
 		Select("address, amount, amount/total as percent").Where("amount >= 0 and state=0").Order("percent desc").Limit(pltHoldersReq.PageSize).Offset(pltHoldersReq.PageSize * pltHoldersReq.PageNo).Find(&pltContracts)
 	var pltContractNum int64
-	db.Model(&models.PLTHolderWithPercent{}).Count(&pltContractNum).Where("amount >=0 and state=0")
+	db.Model(&models.PLTHolderWithPercent{}).Where("amount >=0 and state=0").Count(&pltContractNum)
 	c.Data["json"] = models.MakePLTHoldersResponse(pltHoldersReq.PageSize, pltHoldersReq.PageNo,
 		(int(pltContractNum)+pltHoldersReq.PageSize-1)/pltHoldersReq.PageSize, int(pltContractNum), pltContracts)
 	c.ServeJSON()

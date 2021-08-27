@@ -10,6 +10,7 @@ require (
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
 	github.com/palettechain/palette-go-sdk v0.0.1
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
+	github.com/shopspring/decimal v1.2.0
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/urfave/cli v1.22.4
 	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect

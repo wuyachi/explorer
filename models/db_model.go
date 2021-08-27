@@ -3,7 +3,8 @@ package models
 import (
 	"database/sql/driver"
 	"fmt"
-	"github.com/ethereum/go-ethereum/contracts/native/utils/decimal"
+	// "github.com/ethereum/go-ethereum/contracts/native/utils/decimal"
+	"github.com/shopspring/decimal"
 	"math/big"
 )
 
@@ -26,9 +27,16 @@ func NewBigInt(value *big.Int) *BigInt {
 }
 
 func FormatAmount(precision uint64, amount *BigInt) string {
+	i := decimal.NewFromBigInt(&amount.Int, 10)
+	p := big.NewInt(10)
+	p.Exp(p, big.NewInt(int64(precision)), nil)
+	return i.Div(decimal.NewFromBigInt(p, 10)).String()
+	/*
 	precision_new := decimal.NewFromBigInt(big.NewInt(1), int32(precision))
 	amount_new := decimal.NewFromBigInt(&amount.Int, 0)
 	return amount_new.Div(precision_new).String()
+	*/
+
 }
 
 func (bigInt *BigInt) FormatAsPLT() string {

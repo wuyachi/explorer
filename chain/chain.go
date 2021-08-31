@@ -355,10 +355,10 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						proposeInfo.State = 2
 					}
 				} else if event.EventId.String() == client.GovernanceEventID_Stake {
-					owner := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
-					validator := strings.ToLower(common.BytesToAddress(event.Topic[2].Bytes()).String())
-					stakeAccount := strings.ToLower(common.BytesToAddress(event.Topic[3].Bytes()).String())
-					revoke := utils.Hash2Bool(event.Topic[4])
+					owner := strings.ToLower(common.BytesToAddress(event.Topic[0].Bytes()).String())
+					validator := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
+					stakeAccount := strings.ToLower(common.BytesToAddress(event.Topic[2].Bytes()).String())
+					revoke := utils.Hash2Bool(event.Topic[3])
 					amount := new(big.Int).SetBytes(event.Data)
 
 					var stakeInfo *models.Stake

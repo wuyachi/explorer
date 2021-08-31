@@ -245,6 +245,7 @@ type ContractInfo struct {
 type Stake struct {
 	Owner       string `gorm:"primaryKey;size:42;not null"`
 	Validator   string `gorm:"primaryKey;size:42;not null"`
+	StakeAccount string `gorm:"primaryKey;size:42;not null"`
 	StakeAmount *BigInt `gorm:"type:varchar(64);not null"`
 }
 

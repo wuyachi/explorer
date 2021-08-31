@@ -355,16 +355,17 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						proposeInfo.State = 2
 					}
 				} else if event.EventId.String() == client.GovernanceEventID_Stake {
-					validator := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
-					owner := strings.ToLower(common.BytesToAddress(event.Topic[2].Bytes()).String())
-					revoke := utils.Hash2Bool(event.Topic[3])
+					owner := strings.ToLower(common.BytesToAddress(event.Topic[1].Bytes()).String())
+					validator := strings.ToLower(common.BytesToAddress(event.Topic[2].Bytes()).String())
+					stakeAccount := strings.ToLower(common.BytesToAddress(event.Topic[3].Bytes()).String())
+					revoke := utils.Hash2Bool(event.Topic[4])
 					amount := new(big.Int).SetBytes(event.Data)
 
 					var stakeInfo *models.Stake
-					stakeInfo, ok := stakeMap[owner+validator]
+					stakeInfo, ok := stakeMap[owner+validator+stakeAccount]
 					if !ok {
-						stakeInfo = this.getStake(owner, validator)
-						stakeMap[owner+validator] = stakeInfo
+						stakeInfo = this.getStake(owner, validator, stakeAccount)
+						stakeMap[owner+validator+stakeAccount] = stakeInfo
 					}
 
 					if revoke == false {
@@ -518,19 +519,20 @@ func (this *Chain) getPropose(proposeId string) *models.Propose {
 	return proposeInfo
 }
 
-func (this *Chain) getStake(owner string, validator string) *models.Stake {
-	stakeInfo, ok := this.stakeCache[owner+validator]
+func (this *Chain) getStake(owner string, validator string, account string) *models.Stake {
+	stakeInfo, ok := this.stakeCache[owner+validator+account]
 	if ok {
 		return stakeInfo
 	}
 	stakeInfo = new(models.Stake)
-	this.db.Where("owner = ? and validator = ?", owner, validator).First(stakeInfo)
+	this.db.Where("owner = ? and validator = ? and stake_account = ?", owner, validator, account).First(stakeInfo)
 	if stakeInfo.StakeAmount == nil {
 		stakeInfo.StakeAmount = models.NewBigIntFromInt(0)
 	}
 	stakeInfo.Owner = owner
+	stakeInfo.StakeAccount = account
 	stakeInfo.Validator = validator
-	this.stakeCache[owner+validator] = stakeInfo
+	this.stakeCache[owner+validator+account] = stakeInfo
 	return stakeInfo
 }
 

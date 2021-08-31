@@ -611,6 +611,7 @@ type StakeInfoReq struct {
 type StakeInfoResp struct {
 	Owner     string
 	Validator string
+	StakeAccount string
 	Amount    string
 }
 
@@ -618,6 +619,7 @@ func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
 	stakeInfoResp := &StakeInfoResp{
 		Owner:     stake.Owner,
 		Validator: stake.Validator,
+		StakeAccount: stake.StakeAccount,
 		Amount:    stake.StakeAmount.FormatAsPLT(),
 	}
 	return stakeInfoResp

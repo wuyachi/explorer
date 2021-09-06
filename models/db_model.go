@@ -74,8 +74,8 @@ type Chain struct {
 	Id           uint64 `gorm:"primaryKey;type:bigint(20);not null;auto_increment"`
 	Name         string `gorm:"size:64"`
 	Height       uint64 `gorm:"type:bigint(20);not null"`
-	StakeAmount  uint64 `gorm:"type:bigint(20);not null"`
-	LastReward   uint64 `gorm:"type:bigint(20);not null"`
+	StakeAmount  *BigInt `gorm:"type:varchar(64);not null"`
+	LastReward   *BigInt `gorm:"type:varchar(64);not null"`
 	MintPrice    uint64 `gorm:"type:bigint(20);not null"`
 	RewardPeriod uint64 `gorm:"type:bigint(20);not null"`
 	GasFee       uint64 `gorm:"type:bigint(20);not null"`
@@ -237,7 +237,7 @@ type ContractInfo struct {
 	Description string `gorm:"size:1024;not null"`
 	BaseUri         string `gorm:"size:66;not null"`
 	Time        uint64 `gorm:"type:bigint(20);not null"`
-	TotalSupply uint64 `gorm:"type:bigint(20);not null"`
+	TotalSupply *BigInt `gorm:"type:varchar(64);not null"`
 	AddressNum  uint64 `gorm:"type:bigint(20);not null"`
 	TransferNum uint64 `gorm:"type:bigint(20);not null"`
 }

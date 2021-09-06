@@ -19,7 +19,7 @@ type ChainResp struct {
 	Name         string
 	Height       uint64
 	StakeAmount  string
-	LastReward   uint64
+	LastReward   string
 	MintPrice    string
 	RewardPeriod uint64
 	GasFee       string
@@ -36,8 +36,8 @@ func MakeChainResponse(chain *Chain, transactionNum uint64, totalTime uint64, to
 		Id:           chain.Id,
 		Name:         chain.Name,
 		Height:       chain.Height,
-		StakeAmount:  utils.AmountWithoutPrecision(chain.StakeAmount),
-		LastReward:   chain.LastReward,
+		StakeAmount:  chain.StakeAmount.FormatAsPLT(),
+		LastReward:   chain.LastReward.FormatAsPLT(),
 		MintPrice:    utils.AmountWithoutPrecision(chain.MintPrice),
 		RewardPeriod: chain.RewardPeriod,
 		GasFee:       utils.AmountWithoutPrecision(chain.GasFee),
@@ -430,7 +430,7 @@ type ContractInfoResp struct {
 	Description string
 	BaseUri string
 	Time        uint64
-	TotalSupply uint64
+	TotalSupply string
 	AddressNum  uint64
 	TransferNum uint64
 }
@@ -447,7 +447,7 @@ func MakeContractInfoResponse(nftContract *ContractInfo) *ContractInfoResp {
 		Time:        nftContract.Time,
 		BaseUri: nftContract.BaseUri,
 		Description: nftContract.Description,
-		TotalSupply: nftContract.TotalSupply,
+		TotalSupply: nftContract.TotalSupply.FormatAsPLT(),
 		AddressNum:  nftContract.AddressNum,
 		TransferNum: nftContract.TransferNum,
 	}

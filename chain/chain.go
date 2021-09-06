@@ -85,7 +85,7 @@ func NewChain(cfg *conf.Config) *Chain {
 	}
 	contractInfo.Name = name
 	contractInfo.Symbol = symbol
-	contractInfo.TotalSupply = supply.Uint64()
+	contractInfo.TotalSupply = &models.BigInt{*supply}
 	db.Create(contractInfo)
 	return chain
 }
@@ -313,7 +313,7 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 						Site:        "",
 						Type:        basedef.CONTRACT_TYPE_NFT,
 						Time:        blockInfo.Time,
-						TotalSupply: supply.Uint64(),
+						TotalSupply: &models.BigInt{*supply},
 						AddressNum:  0,
 						TransferNum: 0,
 					}
@@ -423,8 +423,8 @@ func (this *Chain) HandleNewBlock(height uint64) error {
 	mintPrice, _ := this.sdk.GetMintPrice()
 	rewardPeriod, _ := this.sdk.GetRewardPeriod()
 	gasFee, _ := this.sdk.GetGasFee()
-	this.chain.StakeAmount = utils.AbandonPrecision(stakeAmount)
-	this.chain.LastReward = lastReward.Uint64()
+	this.chain.StakeAmount = &models.BigInt{*stakeAmount}
+	this.chain.LastReward = &models.BigInt{*lastReward}
 	this.chain.MintPrice = utils.AbandonPrecision(mintPrice)
 	this.chain.RewardPeriod = rewardPeriod.Uint64()
 	this.chain.GasFee = utils.AbandonPrecision(gasFee)

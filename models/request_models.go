@@ -1,12 +1,16 @@
 package models
 
 import (
+	"encoding/json"
 	"explorer/basedef"
 	"explorer/utils"
 	"fmt"
+	"github.com/astaxie/beego/logs"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/contracts/native"
 	"github.com/ethereum/go-ethereum/contracts/native/utils/decimal"
+	"io/ioutil"
+	"net/http"
 )
 
 type ExplorerResp struct {
@@ -15,16 +19,16 @@ type ExplorerResp struct {
 }
 
 type ChainResp struct {
-	Id           uint64
-	Name         string
-	Height       uint64
-	StakeAmount  string
-	LastReward   string
-	MintPrice    string
-	RewardPeriod uint64
-	GasFee       string
+	Id             uint64
+	Name           string
+	Height         uint64
+	StakeAmount    string
+	LastReward     string
+	MintPrice      string
+	RewardPeriod   uint64
+	GasFee         string
 	TransactionNum uint64
-	BlockTime    string
+	BlockTime      string
 }
 
 func MakeChainResponse(chain *Chain, transactionNum uint64, totalTime uint64, totalBlock uint64) *ChainResp {
@@ -33,16 +37,16 @@ func MakeChainResponse(chain *Chain, transactionNum uint64, totalTime uint64, to
 	blocks := decimal.NewFromInt(int64(totalBlock))
 	avgTime := times.Div(blocks)
 	chainResp := &ChainResp{
-		Id:           chain.Id,
-		Name:         chain.Name,
-		Height:       chain.Height,
-		StakeAmount:  chain.StakeAmount.FormatAsPLT(),
-		LastReward:   chain.LastReward.FormatAsPLT(),
-		MintPrice:    utils.AmountWithoutPrecision(chain.MintPrice),
-		RewardPeriod: chain.RewardPeriod,
-		GasFee:       utils.AmountWithoutPrecision(chain.GasFee),
+		Id:             chain.Id,
+		Name:           chain.Name,
+		Height:         chain.Height,
+		StakeAmount:    chain.StakeAmount.FormatAsPLT(),
+		LastReward:     chain.LastReward.FormatAsPLT(),
+		MintPrice:      utils.AmountWithoutPrecision(chain.MintPrice),
+		RewardPeriod:   chain.RewardPeriod,
+		GasFee:         utils.AmountWithoutPrecision(chain.GasFee),
 		TransactionNum: transactionNum,
-		BlockTime: avgTime.String(),
+		BlockTime:      avgTime.String(),
 	}
 	return chainResp
 }
@@ -285,9 +289,9 @@ func MakeTransactionDetailResponse(transactionDetail *TransactionDetailWithInfo)
 	expectAddr := common.HexToAddress(native.PLTContractAddress)
 	if thisAddr == expectAddr {
 		/*
-		var pltAmount uint64
-		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
-		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
+			var pltAmount uint64
+			fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
+			transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
 		*/
 	} else {
 		transactionDetailResp.IsNft = true
@@ -319,9 +323,9 @@ func MakeTransactionDetailResponse1(transactionDetail *TransactionDetail) *Trans
 	expectAddr := common.HexToAddress(native.PLTContractAddress)
 	if thisAddr == expectAddr {
 		/*
-		var pltAmount uint64
-		fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
-		transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
+			var pltAmount uint64
+			fmt.Sscanf(transactionDetailResp.Value, "%d", &pltAmount)
+			transactionDetailResp.Value = utils.AmountWithoutPrecision(pltAmount)
 		*/
 	} else {
 		transactionDetailResp.IsNft = true
@@ -428,7 +432,7 @@ type ContractInfoResp struct {
 	Uri         string
 	Site        string
 	Description string
-	BaseUri string
+	BaseUri     string
 	Time        uint64
 	TotalSupply string
 	AddressNum  uint64
@@ -445,7 +449,7 @@ func MakeContractInfoResponse(nftContract *ContractInfo) *ContractInfoResp {
 		Uri:         nftContract.Uri,
 		Site:        nftContract.Site,
 		Time:        nftContract.Time,
-		BaseUri: nftContract.BaseUri,
+		BaseUri:     nftContract.BaseUri,
 		Description: nftContract.Description,
 		TotalSupply: nftContract.TotalSupply.FormatAsPLT(),
 		AddressNum:  nftContract.AddressNum,
@@ -481,48 +485,79 @@ func MakeContractInfosResponse(pageSize int, pageNo int, totalPage int, totalCou
 }
 
 type NFTHolderReq struct {
-	Contract   string
-	Token string
+	Contract string
+	Token    string
 }
 
 type NFTHolderResp struct {
-	Contract   string
-	Token string
-	Owner string
-	Uri   string
+	Contract string
+	Token    string
+	Owner    string
+	Uri      string
+	Profile  *NftProfile `json:",omitempty"`
+}
+
+type NftProfile struct {
+	Image       string `json:"image"`
+	ExternalUrl string `json:"external_url,omitempty"`
+	Description string `json:"description,omitempty"`
+	Name        string `json:"name"`
 }
 
 func MakeNFTHolderResponse(nftContract *NFTHolder) *NFTHolderResp {
 	nftTokenInfoResp := &NFTHolderResp{
-		Contract:   nftContract.NFT,
-		Token: nftContract.Token,
-		Owner: nftContract.Owner,
-		Uri:   nftContract.Uri,
+		Contract: nftContract.NFT,
+		Token:    nftContract.Token,
+		Owner:    nftContract.Owner,
+		Uri:      nftContract.Uri,
 	}
 	return nftTokenInfoResp
 }
 
 func MakeNFTHolderWithUriResponse(nftContract *NFTHolderWithUri) *NFTHolderResp {
 	nftTokenInfoResp := &NFTHolderResp{
-		Contract:   nftContract.NFT,
-		Token: nftContract.Token,
-		Owner: nftContract.Owner,
-		Uri:   nftContract.Uri,
+		Contract: nftContract.NFT,
+		Token:    nftContract.Token,
+		Owner:    nftContract.Owner,
+		Uri:      nftContract.Uri,
 	}
 	if nftContract.ContractInfo != nil {
 		nftTokenInfoResp.Uri = nftContract.ContractInfo.BaseUri + nftContract.Uri
+		req, err := http.NewRequest("GET", nftTokenInfoResp.Uri, nil)
+		if err != nil {
+			return nftTokenInfoResp
+		}
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			logs.Error("get nftContract uri info err: %s", err)
+			return nftTokenInfoResp
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			logs.Error("response status code: %d", resp.StatusCode)
+			return nftTokenInfoResp
+		}
+		respBody, _ := ioutil.ReadAll(resp.Body)
+		profile := &NftProfile{}
+		err = json.Unmarshal(respBody, profile)
+		if err != nil {
+			logs.Error("get NFT profile err:", err)
+			return nftTokenInfoResp
+		}
+		nftTokenInfoResp.Profile = profile
 	}
 	return nftTokenInfoResp
 }
 
 type NFTHoldersReq struct {
-	Contract      string
+	Contract string
 	PageSize int
 	PageNo   int
 }
 
 type NFTHoldersOfUserReq struct {
-	Contract      string
+	Contract string
 	Address  string
 	PageSize int
 	PageNo   int
@@ -550,21 +585,21 @@ func MakeNFTHoldersResponse(pageSize int, pageNo int, totalPage int, totalCount 
 }
 
 type NFTUserReq struct {
-	Contract   string
-	Owner string
+	Contract string
+	Owner    string
 }
 
 type NFTUserResp struct {
-	Contract         string
-	Owner       string
-	TokenNumber uint64
-	ContractInfo    *ContractInfoResp `json:",omitempty"`
-	Percent     string `json:",omitempty"`
+	Contract     string
+	Owner        string
+	TokenNumber  uint64
+	ContractInfo *ContractInfoResp `json:",omitempty"`
+	Percent      string            `json:",omitempty"`
 }
 
 func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
 	nftUserResp := &NFTUserResp{
-		Contract:         nftUser.NFT,
+		Contract:    nftUser.NFT,
 		Owner:       nftUser.Owner,
 		TokenNumber: nftUser.TokenNumber,
 		Percent:     basedef.FromatPercent(nftUser.Percent),
@@ -576,8 +611,8 @@ func MakeNFTUserResponse(nftUser *NFTUser) *NFTUserResp {
 }
 
 type NFTUsersReq struct {
-	Contract      string
-	Owner       string
+	Contract string
+	Owner    string
 	PageSize int
 	PageNo   int
 }
@@ -609,18 +644,18 @@ type StakeInfoReq struct {
 }
 
 type StakeInfoResp struct {
-	Owner     string
-	Validator string
+	Owner        string
+	Validator    string
 	StakeAccount string
-	Amount    string
+	Amount       string
 }
 
 func MakeStakeInfoResponse(stake *Stake) *StakeInfoResp {
 	stakeInfoResp := &StakeInfoResp{
-		Owner:     stake.Owner,
-		Validator: stake.Validator,
+		Owner:        stake.Owner,
+		Validator:    stake.Validator,
 		StakeAccount: stake.StakeAccount,
-		Amount:    stake.StakeAmount.FormatAsPLT(),
+		Amount:       stake.StakeAmount.FormatAsPLT(),
 	}
 	return stakeInfoResp
 }
@@ -809,10 +844,9 @@ func MakeProposesOfUserResponse(pageSize int, pageNo int, totalPage int, totalCo
 	return proposesOfUserResp
 }
 
-
 type TransactionDetailsOfUserReq struct {
-	Contract      string
-	User string
+	Contract string
+	User     string
 	PageSize int
 	PageNo   int
 }

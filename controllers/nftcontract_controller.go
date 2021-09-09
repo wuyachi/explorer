@@ -18,7 +18,7 @@ func (c *NFTContractController) NFTs() {
 		panic(err)
 	}
 	nftContracts := make([]*models.ContractInfo, 0)
-	db.Limit(nftsReq.PageSize).Offset(nftsReq.PageSize * nftsReq.PageNo).Order("time desc").Where("`type` = ?", basedef.CONTRACT_TYPE_NFT).Find(&nftContracts)
+	db.Limit(nftsReq.PageSize).Offset(nftsReq.PageSize*nftsReq.PageNo).Order("time desc").Where("`type` = ?", basedef.CONTRACT_TYPE_NFT).Find(&nftContracts)
 	var nftContractNum int64
 	db.Model(&models.ContractInfo{}).Where("`type` = ?", basedef.CONTRACT_TYPE_NFT).Count(&nftContractNum)
 	c.Data["json"] = models.MakeContractInfosResponse(nftsReq.PageSize, nftsReq.PageNo,
